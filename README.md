@@ -1,6 +1,7 @@
 # ARGUS: AI-Augmented Multi-Vendor Network Security Compliance Auditor
 ### Problem Statement ID: SIH26155 | Smart India Hackathon 2026
 
+[![Live Prototype](https://img.shields.io/badge/Live%20Prototype-argus--auditor.web.app-00C7B7?style=for-the-badge&logo=firebase)](https://argus-auditor.web.app/)
 [![Air-Gap Guaranteed](https://img.shields.io/badge/Air--Gap-100%25%20Offline%20Verified-emerald?style=for-the-badge&logo=shield)](https://github.com/Prathamwadiyar/SIH2026)
 [![Architecture Verified](https://img.shields.io/badge/Architecture-Deterministic%20First-cyan?style=for-the-badge)](./Architecture%20Document.pdf)
 [![AI Engine](https://img.shields.io/badge/Dialect%20Engine-Bounded%20Local%20ML-amber?style=for-the-badge)](https://github.com/Prathamwadiyar/SIH2026)
@@ -10,8 +11,12 @@
 
 ---
 
-## 📑 Official Architecture & Technical Specification
+## 🌐 Live Deployed Prototype & Architecture Specification
 
+> 🚀 **Live Interactive Prototype (Firebase):**  
+> Test the deployed application live in your browser:  
+> 👉 **[https://argus-auditor.web.app/](https://argus-auditor.web.app/)** 👈
+>
 > 📄 **Complete System Architecture Specification Document:**  
 > The comprehensive engineering architecture document is committed in the root repository.  
 > 👉 **[Click Here to Open Architecture Document (PDF)](./Architecture%20Document.pdf)** 👈  
@@ -196,6 +201,11 @@ SIH2026/
 - **Node.js 18+** (with `npm`)
 - **Git**
 
+### Option 0: Live Deployed Cloud Prototype (Zero Install)
+
+You can interact with the live hosted web application immediately without installing anything:
+👉 **[https://argus-auditor.web.app/](https://argus-auditor.web.app/)**
+
 ---
 
 ### Option A: 1-Click Launch (Windows)
@@ -311,6 +321,7 @@ python -m pytest tests/test_auditor.py -v
 - **Project Name:** ARGUS (Cybersecurity Compliance & Dialect Intelligence Platform)
 - **Problem Statement ID:** SIH26155
 - **Hackathon:** Smart India Hackathon 2026
+- **Live Deployed Prototype:** [https://argus-auditor.web.app/](https://argus-auditor.web.app/)
 - **Architecture Specification:** [Architecture Document.pdf](./Architecture%20Document.pdf)
 - **Repository:** [https://github.com/Prathamwadiyar/SIH2026.git](https://github.com/Prathamwadiyar/SIH2026.git)
 - **License:** ISC / MIT Open Source

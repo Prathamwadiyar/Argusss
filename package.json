@@ -1,6 +1,7 @@
 {
   "name": "sih26155-network-compliance-auditor",
   "version": "1.0.4",
+  "homepage": "https://argus-auditor.web.app/",
   "description": "AI-Driven Multi-Vendor Network Security Compliance Auditor",
   "scripts": {
     "dev": "npm run dev --prefix frontend",
