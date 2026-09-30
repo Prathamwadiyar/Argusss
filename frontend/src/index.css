@@ -1,0 +1,177 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-void: #000000;
+    --bg-obsidian: #08080a;
+    --bg-surface: #0e0e12;
+    --bg-surface-elevated: #16161b;
+    
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-medium: rgba(255, 255, 255, 0.16);
+    --border-accent: rgba(255, 255, 255, 0.28);
+    
+    --text-primary: #ffffff;
+    --text-secondary: #a1a1aa;
+    --text-muted: #71717a;
+
+    /* Cybersecurity domain status accents */
+    --accent-emerald: #10b981;
+    --accent-rose: #ef4444;
+    --accent-amber: #f59e0b;
+    --accent-cyan: #38bdf8;
+  }
+
+  body {
+    background-color: var(--bg-void);
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow-x: clip;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.01em;
+  }
+}
+
+/* Custom Font Family Utilities */
+.font-display {
+  font-family: 'Syne', sans-serif;
+}
+
+.font-serif-luxury {
+  font-family: 'Italiana', 'Cinzel', serif;
+}
+
+.font-tech {
+  font-family: 'Syncopate', sans-serif;
+}
+
+.font-condensed {
+  font-family: 'Oswald', sans-serif;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Monochromatic Editorial Minimalist Glass Cards & Panels */
+.minimal-panel {
+  background: rgba(10, 10, 14, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1.25rem;
+}
+
+.minimal-card {
+  background: rgba(14, 14, 18, 0.6);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1rem;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.minimal-card:hover {
+  background: rgba(22, 22, 28, 0.85);
+  border-color: var(--border-medium);
+  transform: translateY(-2px);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.8);
+}
+
+.minimal-input {
+  background: rgba(8, 8, 10, 0.9);
+  border: 1px solid var(--border-subtle);
+  color: #ffffff;
+  border-radius: 0.6rem;
+  transition: all 0.2s ease;
+}
+
+.minimal-input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+/* Cybersecurity Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.badge-pass {
+  background: rgba(16, 185, 129, 0.12);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.badge-fail {
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.badge-inc {
+  background: rgba(245, 158, 11, 0.12);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.badge-cyan {
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+.badge-white {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f1f1f4;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.badge-mono {
+  background: rgba(255, 255, 255, 0.05);
+  color: #d4d4d8;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Subtle Glowing Ring */
+.padlock-glow {
+  box-shadow: 0 0 60px 20px rgba(255, 255, 255, 0.15), 0 0 120px 40px rgba(255, 255, 255, 0.05);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #020204;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #232330;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3b3b4f;
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

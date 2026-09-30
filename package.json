@@ -1,0 +1,23 @@
+{
+  "name": "sih26155-network-compliance-auditor",
+  "version": "1.0.4",
+  "description": "AI-Driven Multi-Vendor Network Security Compliance Auditor",
+  "scripts": {
+    "dev": "npm run dev --prefix frontend",
+    "frontend": "npm run dev --prefix frontend",
+    "backend": "python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload",
+    "build": "npm run build --prefix frontend",
+    "test": "python -m pytest tests/test_auditor.py -v",
+    "start": "npm run dev --prefix frontend"
+  },
+  "keywords": [
+    "network-security",
+    "compliance",
+    "multi-vendor",
+    "cis-benchmarks",
+    "nist-800-53",
+    "ai-auditor"
+  ],
+  "author": "SIH26155 Team",
+  "license": "ISC"
+}

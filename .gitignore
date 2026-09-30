@@ -1,0 +1,57 @@
+# Dependencies
+node_modules/
+*/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+dist/
+frontend/dist/
+build/
+
+# Python cache & artifacts
+__pycache__/
+*/__pycache__/
+*/*/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Testing & Cache
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Firebase & Deployment local cache
+.firebase/
+
+# Agent & Assistant internal files
+.agents/
+.claude/
+skills-lock.json
+
+# Environment variables & local secrets
+.env
+.env.local
+.env.*.local
+
+# Operating System & Editor artifacts
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

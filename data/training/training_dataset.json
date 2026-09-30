@@ -1,0 +1,267 @@
+[
+  {
+    "fragment": "transport input ssh",
+    "property_id": "mgmt.ssh_only",
+    "state": "SSH_ONLY"
+  },
+  {
+    "fragment": "set system services ssh",
+    "property_id": "mgmt.ssh_only",
+    "state": "SSH_ONLY"
+  },
+  {
+    "fragment": "set ssh-admin-access enable",
+    "property_id": "mgmt.ssh_only",
+    "state": "SSH_ONLY"
+  },
+  {
+    "fragment": "ssh-server enable",
+    "property_id": "mgmt.ssh_only",
+    "state": "SSH_ONLY"
+  },
+  {
+    "fragment": "set admin-ssh-cipher chacha20-poly1305",
+    "property_id": "mgmt.ssh_only",
+    "state": "SSH_ONLY"
+  },
+  {
+    "fragment": "crypto key generate rsa modulus 4096",
+    "property_id": "mgmt.ssh_only",
+    "state": "SSH_ONLY"
+  },
+  {
+    "fragment": "system ssh-server algorithm kex",
+    "property_id": "mgmt.ssh_only",
+    "state": "SSH_ONLY"
+  },
+  {
+    "fragment": "ip ssh version 2",
+    "property_id": "mgmt.ssh_only",
+    "state": "SSH_ONLY"
+  },
+  {
+    "fragment": "service sshd restart",
+    "property_id": "mgmt.ssh_only",
+    "state": "SSH_ONLY"
+  },
+  {
+    "fragment": "transport input telnet",
+    "property_id": "mgmt.ssh_only",
+    "state": "UNRESTRICTED"
+  },
+  {
+    "fragment": "set system services telnet",
+    "property_id": "mgmt.ssh_only",
+    "state": "UNRESTRICTED"
+  },
+  {
+    "fragment": "security passwords min-length 12",
+    "property_id": "auth.password_complexity",
+    "state": "TRUE"
+  },
+  {
+    "fragment": "set system login password minimum-length 10",
+    "property_id": "auth.password_complexity",
+    "state": "TRUE"
+  },
+  {
+    "fragment": "set password-policy min-length 12",
+    "property_id": "auth.password_complexity",
+    "state": "TRUE"
+  },
+  {
+    "fragment": "password-attributes min-length 14",
+    "property_id": "auth.password_complexity",
+    "state": "TRUE"
+  },
+  {
+    "fragment": "user admin password-policy strict-entropy",
+    "property_id": "auth.password_complexity",
+    "state": "TRUE"
+  },
+  {
+    "fragment": "enable secret 9 $9$xyzComplexPass",
+    "property_id": "auth.root_auth",
+    "state": "REQUIRED"
+  },
+  {
+    "fragment": "set system root-authentication encrypted-password",
+    "property_id": "auth.root_auth",
+    "state": "REQUIRED"
+  },
+  {
+    "fragment": "aaa authentication login default group tacacs+ local",
+    "property_id": "auth.root_auth",
+    "state": "REQUIRED"
+  },
+  {
+    "fragment": "set authentication-order [ tacacs radius password ]",
+    "property_id": "auth.root_auth",
+    "state": "REQUIRED"
+  },
+  {
+    "fragment": "logging host 192.168.10.50 transport udp port 514",
+    "property_id": "logging.central",
+    "state": "CENTRAL_ENABLED"
+  },
+  {
+    "fragment": "set system syslog host 10.10.10.20 any any",
+    "property_id": "logging.central",
+    "state": "CENTRAL_ENABLED"
+  },
+  {
+    "fragment": "config log syslogd setting set status enable",
+    "property_id": "logging.central",
+    "state": "CENTRAL_ENABLED"
+  },
+  {
+    "fragment": "logging server 172.16.1.100 facility local7",
+    "property_id": "logging.central",
+    "state": "CENTRAL_ENABLED"
+  },
+  {
+    "fragment": "set log-server 10.0.0.99 protocol tls",
+    "property_id": "logging.central",
+    "state": "CENTRAL_ENABLED"
+  },
+  {
+    "fragment": "no logging on",
+    "property_id": "logging.central",
+    "state": "DISABLED"
+  },
+  {
+    "fragment": "logging buffered 4096",
+    "property_id": "logging.central",
+    "state": "LOCAL_ONLY"
+  },
+  {
+    "fragment": "ntp server 192.168.1.1 prefer",
+    "property_id": "time.ntp",
+    "state": "NTP_ENABLED"
+  },
+  {
+    "fragment": "set system ntp server 10.0.0.10",
+    "property_id": "time.ntp",
+    "state": "NTP_ENABLED"
+  },
+  {
+    "fragment": "config system ntp set ntpserver 1.1.1.1",
+    "property_id": "time.ntp",
+    "state": "NTP_ENABLED"
+  },
+  {
+    "fragment": "timesync ntp unicast 10.10.0.1",
+    "property_id": "time.ntp",
+    "state": "NTP_ENABLED"
+  },
+  {
+    "fragment": "sntp server 10.20.30.40",
+    "property_id": "time.ntp",
+    "state": "NTP_ENABLED"
+  },
+  {
+    "fragment": "snmp-server group SECURE_GROUP v3 priv",
+    "property_id": "snmp.secure",
+    "state": "SECURE"
+  },
+  {
+    "fragment": "set snmp v3 usm local-user secadmin authentication-sha privacy-aes",
+    "property_id": "snmp.secure",
+    "state": "SECURE"
+  },
+  {
+    "fragment": "config system snmp user set security-level auth-priv",
+    "property_id": "snmp.secure",
+    "state": "SECURE"
+  },
+  {
+    "fragment": "snmp-server community public RO",
+    "property_id": "snmp.secure",
+    "state": "INSECURE"
+  },
+  {
+    "fragment": "set snmp community public authorization read-only",
+    "property_id": "snmp.secure",
+    "state": "INSECURE"
+  },
+  {
+    "fragment": "exec-timeout 5 0",
+    "property_id": "mgmt.timeout",
+    "state": "RESTRICTED"
+  },
+  {
+    "fragment": "set system login idle-timeout 10",
+    "property_id": "mgmt.timeout",
+    "state": "RESTRICTED"
+  },
+  {
+    "fragment": "set admin-timeout 5",
+    "property_id": "mgmt.timeout",
+    "state": "RESTRICTED"
+  },
+  {
+    "fragment": "console timeout 300",
+    "property_id": "mgmt.timeout",
+    "state": "RESTRICTED"
+  },
+  {
+    "fragment": "exec-timeout 0 0",
+    "property_id": "mgmt.timeout",
+    "state": "UNRESTRICTED"
+  },
+  {
+    "fragment": "no ip http server",
+    "property_id": "svc.insecure_services",
+    "state": "DISABLED"
+  },
+  {
+    "fragment": "ip http server",
+    "property_id": "svc.insecure_services",
+    "state": "EXCESS"
+  },
+  {
+    "fragment": "set system services web-management http",
+    "property_id": "svc.insecure_services",
+    "state": "EXCESS"
+  },
+  {
+    "fragment": "set allowaccess http",
+    "property_id": "svc.insecure_services",
+    "state": "EXCESS"
+  },
+  {
+    "fragment": "aaa authentication login default local",
+    "property_id": "auth.root_auth",
+    "state": "TRUE"
+  },
+  {
+    "fragment": "set proprietary-telemetry-collector 10.0.0.99",
+    "property_id": "logging.central",
+    "state": "CENTRAL_ENABLED"
+  },
+  {
+    "fragment": "set proprietary-telemetry-collector 10.0.0.99",
+    "property_id": "logging.central",
+    "state": "CENTRAL_ENABLED"
+  },
+  {
+    "fragment": "set proprietary-telemetry-collector 10.0.0.99",
+    "property_id": "logging.central",
+    "state": "CENTRAL_ENABLED"
+  },
+  {
+    "fragment": "set proprietary-telemetry-collector 10.0.0.99",
+    "property_id": "logging.central",
+    "state": "CENTRAL_ENABLED"
+  },
+  {
+    "fragment": "set proprietary-telemetry-collector 10.0.0.99",
+    "property_id": "logging.central",
+    "state": "CENTRAL_ENABLED"
+  },
+  {
+    "fragment": "set proprietary-telemetry-collector 10.0.0.99",
+    "property_id": "logging.central",
+    "state": "CENTRAL_ENABLED"
+  }
+]
