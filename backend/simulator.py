@@ -35,6 +35,39 @@ VENDOR_REMEDIATION_SNIPPETS = {
     }
 }
 
+VENDOR_ROLLBACK_SNIPPETS = {
+    "Cisco": {
+        "mgmt.ssh_only": "! Rollback SSH-only transport\nline vty 0 4\n transport input all",
+        "mgmt.timeout": "! Rollback idle timeout\nline vty 0 4\n no exec-timeout\nline console 0\n no exec-timeout",
+        "auth.password_complexity": "! Rollback password length\nno security passwords min-length",
+        "auth.root_auth": "! Rollback enable secret\nno enable secret",
+        "logging.central": "! Rollback central syslog host\nno logging host 192.168.10.50",
+        "time.ntp": "! Rollback NTP server\nno ntp server 192.168.1.1",
+        "snmp.secure": "! Rollback SNMPv3 user\nno snmp-server user secadmin SECURE_GRP",
+        "svc.insecure_services": "! Re-enable default services\nip http server"
+    },
+    "Juniper": {
+        "mgmt.ssh_only": "# Rollback SSH-only enforcement\ndelete system services ssh protocol-version v2\nset system services telnet",
+        "mgmt.timeout": "# Rollback idle timeout\ndelete system login idle-timeout",
+        "auth.password_complexity": "# Rollback password minimum length\ndelete system login password minimum-length",
+        "auth.root_auth": "# Rollback root authentication\ndelete system root-authentication",
+        "logging.central": "# Rollback remote syslog logging\ndelete system syslog host 10.10.10.20",
+        "time.ntp": "# Rollback NTP server\ndelete system ntp server 10.0.0.1",
+        "snmp.secure": "# Rollback SNMPv3 user\ndelete snmp v3 usm local-user secadmin",
+        "svc.insecure_services": "# Re-enable HTTP\nset system services web-management http"
+    },
+    "Fortinet": {
+        "mgmt.ssh_only": "# Rollback admin interface restrictions\nconfig system interface\n edit \"mgmt\"\n set allowaccess ssh https http telnet\nnext\nend",
+        "mgmt.timeout": "# Rollback admin timeout\nconfig system global\n unset admin-timeout\nend",
+        "auth.password_complexity": "# Rollback password policy\nconfig system password-policy\n set status disable\nend",
+        "auth.root_auth": "# FortiOS default",
+        "logging.central": "# Rollback syslog setting\nconfig log syslogd setting\n set status disable\nend",
+        "time.ntp": "# Rollback NTP\nconfig system ntp\n set status disable\nend",
+        "snmp.secure": "# Rollback SNMP user\nconfig system snmp user\n delete \"secadmin\"\nend",
+        "svc.insecure_services": "# Re-enable HTTP access\nconfig system interface\n edit \"mgmt\"\n set allowaccess ssh https http ping\nnext\nend"
+    }
+}
+
 class CounterfactualSimulator:
     """Counterfactual Security Simulator: Evaluates what-if remediation changes against current security
     state and predicts exact compliance deltas before applying changes to network hardware."""
@@ -61,7 +94,10 @@ class CounterfactualSimulator:
 
         vendor = device.vendor if device.vendor in VENDOR_REMEDIATION_SNIPPETS else "Cisco"
         vendor_snippets = VENDOR_REMEDIATION_SNIPPETS.get(vendor, VENDOR_REMEDIATION_SNIPPETS["Cisco"])
+        vendor_rollback_snippets = VENDOR_ROLLBACK_SNIPPETS.get(vendor, VENDOR_ROLLBACK_SNIPPETS["Cisco"])
+
         generated_cli_commands = []
+        generated_rollback_commands = []
 
         for ctrl in controls:
             pred = ctrl.predicate_json or {}
@@ -97,6 +133,12 @@ class CounterfactualSimulator:
                     "control_code": ctrl.code,
                     "cli_snippet": vendor_snippets[p_id]
                 })
+                if p_id in vendor_rollback_snippets:
+                    generated_rollback_commands.append({
+                        "property_id": p_id,
+                        "control_code": ctrl.code,
+                        "cli_snippet": vendor_rollback_snippets[p_id]
+                    })
 
             control_deltas.append({
                 "control_code": ctrl.code,
@@ -131,7 +173,8 @@ class CounterfactualSimulator:
             },
             "control_deltas": control_deltas,
             "proposed_changes": proposed_changes,
-            "generated_cli_script": "\n\n".join([f"// Remediation for {c['control_code']}:\n{c['cli_snippet']}" for c in generated_cli_commands])
+            "generated_cli_script": "\n\n".join([f"// Remediation for {c['control_code']}:\n{c['cli_snippet']}" for c in generated_cli_commands]),
+            "generated_rollback_script": "\n\n".join([f"// Rollback for {c['control_code']}:\n{c['cli_snippet']}" for c in generated_rollback_commands])
         }
 
         # Store simulation record

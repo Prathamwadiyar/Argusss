@@ -268,5 +268,25 @@
     "fragment": "set proprietary-telemetry-collector 10.0.0.99",
     "property_id": "logging.central",
     "state": "CENTRAL_ENABLED"
+  },
+  {
+    "fragment": "set proprietary-telemetry-collector 10.0.0.99",
+    "property_id": "logging.central",
+    "state": "CENTRAL_ENABLED"
+  },
+  {
+    "fragment": "set proprietary-telemetry-collector 10.0.0.99",
+    "property_id": "logging.central",
+    "state": "CENTRAL_ENABLED"
+  },
+  {
+    "fragment": "set proprietary-telemetry-collector 10.0.0.99",
+    "property_id": "logging.central",
+    "state": "CENTRAL_ENABLED"
+  },
+  {
+    "fragment": "set proprietary-telemetry-collector 10.0.0.99",
+    "property_id": "logging.central",
+    "state": "CENTRAL_ENABLED"
   }
 ]

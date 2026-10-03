@@ -20,5 +20,8 @@
     "ai-auditor"
   ],
   "author": "SIH26155 Team",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "animejs": "^4.5.0"
+  }
 }

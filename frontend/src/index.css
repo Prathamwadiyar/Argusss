@@ -175,3 +175,160 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* ========================================================================= */
+/* AUTHORITATIVE EXECUTIVE LIGHT THEME (CONSOLE ONLY) */
+/* Designed for compliance officers, auditors, and certifying authorities */
+/* ========================================================================= */
+.console-theme {
+  --bg-console: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-card-subtle: #f1f5f9;
+  --border-console: #e2e8f0;
+  --border-console-strong: #cbd5e1;
+  --text-console-title: #0f172a;
+  --text-console-body: #334155;
+  --text-console-muted: #64748b;
+  
+  background-color: var(--bg-console) !important;
+  color: var(--text-console-body) !important;
+}
+
+.console-theme .minimal-panel {
+  background: #ffffff !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 0.875rem !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05) !important;
+}
+
+.console-theme .minimal-card {
+  background: #ffffff !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04) !important;
+  transition: all 0.2s ease !important;
+}
+
+.console-theme .minimal-card:hover {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 16px -2px rgba(0, 0, 0, 0.07) !important;
+}
+
+.console-theme .minimal-input {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+  border-radius: 0.5rem !important;
+}
+
+.console-theme .minimal-input:focus {
+  outline: none !important;
+  border-color: #059669 !important;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.15) !important;
+}
+
+.console-theme .badge-pass {
+  background: #ecfdf5 !important;
+  color: #065f46 !important;
+  border: 1px solid #a7f3d0 !important;
+}
+
+.console-theme .badge-fail {
+  background: #fef2f2 !important;
+  color: #991b1b !important;
+  border: 1px solid #fecaca !important;
+}
+
+.console-theme .badge-inc {
+  background: #fffbeb !important;
+  color: #92400e !important;
+  border: 1px solid #fde68a !important;
+}
+
+.console-theme .badge-cyan {
+  background: #f0fdf4 !important;
+  color: #166534 !important;
+  border: 1px solid #bbf7d0 !important;
+}
+
+.console-theme .badge-white {
+  background: #f1f5f9 !important;
+  color: #334155 !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+.console-theme .badge-mono {
+  background: #f8fafc !important;
+  color: #475569 !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+.console-theme ::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.console-theme ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
+
+.console-theme ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ========================================================================= */
+/* Animata Split Reveal Page Transition Animations                           */
+/* ========================================================================= */
+
+@keyframes split-reveal-shutter-top {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, -100%, 0);
+  }
+}
+
+@keyframes split-reveal-shutter-bottom {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 100%, 0);
+  }
+}
+
+[data-split-reveal-overlay] [data-split-reveal-progress] {
+  opacity: 1;
+  transition: opacity var(--split-reveal-progress-fade, 220ms) ease-out;
+}
+
+[data-split-reveal-overlay][data-phase="fade-ui"] [data-split-reveal-progress],
+[data-split-reveal-overlay][data-phase="reveal"] [data-split-reveal-progress] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+[data-split-reveal-overlay][data-phase="reveal"] [data-split-reveal-shutter="top"] {
+  animation: split-reveal-shutter-top var(--split-reveal-duration, 0.85s) cubic-bezier(0.76, 0, 0.24, 1) forwards;
+}
+
+[data-split-reveal-overlay][data-phase="reveal"] [data-split-reveal-shutter="bottom"] {
+  animation: split-reveal-shutter-bottom var(--split-reveal-duration, 0.85s) cubic-bezier(0.76, 0, 0.24, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-split-reveal-overlay][data-phase="reveal"] [data-split-reveal-shutter] {
+    animation: none;
+    opacity: 0;
+  }
+  [data-split-reveal-overlay] [data-split-reveal-progress] {
+    transition: none;
+  }
+}
+

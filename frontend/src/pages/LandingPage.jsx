@@ -299,7 +299,7 @@ const LandingPage = ({ onLaunch }) => {
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
             <img
-              src="/logo.png"
+              src="/logo-dark.png"
               alt="Argus Logo"
               className="h-10 sm:h-12 w-auto object-contain filter drop-shadow-[0_0_18px_rgba(255,255,255,0.4)] group-hover:scale-105 transition-transform duration-300"
             />
@@ -357,7 +357,7 @@ const LandingPage = ({ onLaunch }) => {
               Multi-Vendor <span className="text-emerald-400 drop-shadow-[0_0_14px_rgba(52,211,153,0.6)]">Network</span> Auditor
             </h1>
             <p className="text-[10px] sm:text-xs text-zinc-400 font-mono tracking-wide mt-1 max-w-sm sm:max-w-md">
-              Deterministic Security Verification across <span className="text-zinc-200">Cisco, Juniper</span> &amp; <span className="text-zinc-200">Fortinet</span>
+              Deterministic Security Verification across <span className="text-zinc-200">diverse network infrastructure</span>
             </p>
           </motion.div>
 
@@ -428,6 +428,26 @@ const LandingPage = ({ onLaunch }) => {
                   Evaluates Cisco IOS-XE, Juniper Junos, and Fortinet FortiOS architectures against CIS Benchmarks,
                   NIST SP 800-53, DISA STIGs, ISO/IEC 27001, and NCIIPC guidelines with 100% offline mathematical proof.
                 </p>
+              </motion.div>
+
+              {/* 4. Hero Direct Console Launch CTA */}
+              <motion.div
+                style={{ opacity: ctaOpacity, y: ctaY }}
+                className="pt-2 pointer-events-auto flex flex-wrap items-center gap-4"
+              >
+                <button
+                  onClick={onLaunch}
+                  className="px-8 py-4 rounded-full bg-white text-black font-extrabold text-xs sm:text-sm tracking-wide hover:bg-emerald-400 hover:text-black transition-all shadow-[0_0_30px_rgba(255,255,255,0.25)] hover:shadow-[0_0_40px_rgba(52,211,153,0.5)] hover:scale-[1.02] inline-flex items-center gap-2.5"
+                >
+                  <span>Launch Auditor Console</span>
+                  <ArrowRight size={15} />
+                </button>
+                <a
+                  href="#paradox"
+                  className="px-6 py-4 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] text-xs font-mono text-zinc-300 hover:text-white transition-all"
+                >
+                  Explore Architecture &darr;
+                </a>
               </motion.div>
             </div>
           </div>

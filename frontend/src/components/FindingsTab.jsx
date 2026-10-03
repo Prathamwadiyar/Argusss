@@ -5,13 +5,10 @@ import {
   XCircle,
   AlertTriangle,
   Search,
-  Filter,
   Code,
   Shield,
   ChevronDown,
-  ChevronUp,
-  FileText,
-  Server
+  ChevronUp
 } from 'lucide-react';
 
 const FindingsTab = ({ findings = [], devices = [] }) => {
@@ -54,68 +51,68 @@ const FindingsTab = ({ findings = [], devices = [] }) => {
     switch (status) {
       case 'PASS':
         return (
-          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
-            <CheckCircle2 size={12} /> PASS
+          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5">
+            <CheckCircle2 size={12} className="text-emerald-600" /> PASS
           </span>
         );
       case 'FAIL':
         return (
-          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-rose-500/15 text-rose-400 border border-rose-500/30 flex items-center gap-1.5">
-            <XCircle size={12} /> FAIL
+          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1.5">
+            <XCircle size={12} className="text-rose-600" /> FAIL
           </span>
         );
       case 'INCONCLUSIVE':
         return (
-          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/30 flex items-center gap-1.5">
-            <AlertTriangle size={12} /> INCONCLUSIVE
+          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-1.5">
+            <AlertTriangle size={12} className="text-amber-600" /> INCONCLUSIVE
           </span>
         );
       default:
-        return <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-white/10 text-white">{status}</span>;
+        return <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-200">{status}</span>;
     }
   };
 
   const getSeverityBadge = (sev) => {
     const color =
-      sev === 'CRITICAL' ? 'text-rose-400 bg-rose-500/10 border-rose-500/30' :
-      sev === 'HIGH' ? 'text-orange-400 bg-orange-500/10 border-orange-500/30' :
-      sev === 'MEDIUM' ? 'text-amber-400 bg-amber-500/10 border-amber-500/30' :
-      'text-blue-400 bg-blue-500/10 border-blue-500/30';
+      sev === 'CRITICAL' ? 'text-rose-800 bg-rose-50 border-rose-200' :
+      sev === 'HIGH' ? 'text-orange-800 bg-orange-50 border-orange-200' :
+      sev === 'MEDIUM' ? 'text-amber-800 bg-amber-50 border-amber-200' :
+      'text-blue-800 bg-blue-50 border-blue-200';
 
     return <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border uppercase ${color}`}>{sev}</span>;
   };
 
   return (
-    <div className="space-y-6 animate-fadeIn text-[#f5f5f7]">
+    <div className="space-y-5 animate-fadeIn text-slate-800">
       {/* Header Banner */}
-      <div className="rounded-2xl p-6 bg-[#06060a]/95 backdrop-blur-2xl border border-white/[0.12] space-y-4 shadow-xl">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="rounded-xl p-5 bg-white border border-slate-200 shadow-sm space-y-3">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="p-2 rounded-lg bg-white/[0.04] text-cyan-400 border border-white/[0.08]">
-                <Shield size={18} />
+              <span className="p-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <Shield size={16} />
               </span>
-              <h2 className="text-xl font-bold text-white font-display">
+              <h2 className="text-lg font-bold text-slate-900 font-display">
                 Findings & Evidence Registry
               </h2>
             </div>
-            <p className="text-xs text-white/60 max-w-3xl leading-relaxed">
-              Deterministic rules are the compliance source of truth. Every finding is backed by exact line-level configuration citations,
-              observed versus expected canonical states, confidence metrics, and cross-references to CIS Benchmarks, NIST SP 800-53, DISA STIGs, ISO/IEC 27001, and NCIIPC.
+            <p className="text-xs text-slate-600 max-w-3xl leading-relaxed">
+              Deterministic verification source of truth. Every finding links to exact configuration line citations,
+              observed versus expected states, confidence scores, and cross-references to CIS, NIST, DISA, ISO, and NCIIPC.
             </p>
           </div>
 
           <div className="flex items-center gap-2 font-mono text-xs">
-            <span className="px-3 py-1.5 rounded-lg bg-black/60 border border-white/[0.08] text-emerald-400 font-semibold">
-              Deterministic Rules Authoritative
+            <span className="px-3 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 font-semibold">
+              Deterministic Verification Active
             </span>
           </div>
         </div>
 
         {/* Framework Filter Buttons */}
-        <div className="pt-3 border-t border-white/[0.08] flex flex-wrap items-center gap-2">
-          <span className="text-[11px] font-mono uppercase tracking-wider text-white/40 mr-1">
-            Filter by Framework:
+        <div className="pt-2.5 border-t border-slate-100 flex flex-wrap items-center gap-1.5">
+          <span className="text-[11px] font-mono uppercase tracking-wider text-slate-500 mr-1">
+            Framework:
           </span>
           {[
             { id: 'ALL', label: 'All Frameworks' },
@@ -128,10 +125,10 @@ const FindingsTab = ({ findings = [], devices = [] }) => {
             <button
               key={fw.id}
               onClick={() => setFrameworkFilter(fw.id)}
-              className={`px-3 py-1 rounded-full text-xs font-mono transition-all ${
+              className={`px-2.5 py-1 rounded-md text-xs font-mono transition-all ${
                 frameworkFilter === fw.id
-                  ? 'bg-cyan-400 text-black font-bold shadow-md shadow-cyan-400/20'
-                  : 'bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.08] text-white/70'
+                  ? 'bg-slate-900 text-white font-semibold shadow-xs'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200'
               }`}
             >
               {fw.label}
@@ -141,32 +138,32 @@ const FindingsTab = ({ findings = [], devices = [] }) => {
       </div>
 
       {/* Search & Filter Toolbar */}
-      <div className="rounded-2xl p-5 bg-[#06060a]/95 border border-white/[0.12] space-y-4 shadow-xl">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="rounded-xl p-4 bg-white border border-slate-200 shadow-sm space-y-3">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           {/* Search Box */}
           <div className="relative flex-1">
-            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40" />
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
-              placeholder="Search controls (MGMT-01, AUTH-01), properties, rules, or hostnames..."
+              placeholder="Search controls (MGMT-01, AUTH-01), rules, or hostnames..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-black/80 border border-white/[0.12] text-xs text-white placeholder-white/40 focus:border-cyan-400 focus:outline-none font-mono"
+              className="w-full pl-9 pr-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:border-slate-500 focus:outline-none font-mono"
             />
           </div>
 
           {/* Filters */}
           <div className="flex flex-wrap items-center gap-2">
             {/* Status Pills */}
-            <div className="flex rounded-lg bg-black/80 p-1 border border-white/[0.08] text-xs">
+            <div className="flex rounded-lg bg-slate-100 p-1 border border-slate-200 text-xs">
               {['ALL', 'PASS', 'FAIL', 'INCONCLUSIVE'].map((st) => (
                 <button
                   key={st}
                   onClick={() => setStatusFilter(st)}
-                  className={`px-3 py-1 rounded-md font-mono text-[11px] font-semibold transition-all ${
+                  className={`px-2.5 py-1 rounded font-mono text-[11px] font-semibold transition-all ${
                     statusFilter === st
-                      ? 'bg-white text-black shadow-sm font-bold'
-                      : 'text-white/60 hover:text-white'
+                      ? 'bg-white text-slate-900 shadow-xs font-bold'
+                      : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   {st}
@@ -178,7 +175,7 @@ const FindingsTab = ({ findings = [], devices = [] }) => {
             <select
               value={severityFilter}
               onChange={(e) => setSeverityFilter(e.target.value)}
-              className="px-3 py-1.5 rounded-lg bg-black/80 border border-white/[0.12] text-xs text-white/80 font-mono focus:outline-none"
+              className="px-2.5 py-1.5 rounded-lg bg-white border border-slate-300 text-xs text-slate-800 font-mono focus:outline-none shadow-xs"
             >
               <option value="ALL">All Severities</option>
               <option value="CRITICAL">Critical</option>
@@ -191,9 +188,9 @@ const FindingsTab = ({ findings = [], devices = [] }) => {
             <select
               value={deviceFilter}
               onChange={(e) => setDeviceFilter(e.target.value)}
-              className="px-3 py-1.5 rounded-lg bg-black/80 border border-white/[0.12] text-xs text-white/80 font-mono focus:outline-none"
+              className="px-2.5 py-1.5 rounded-lg bg-white border border-slate-300 text-xs text-slate-800 font-mono focus:outline-none shadow-xs"
             >
-              <option value="ALL">All Ingested Devices</option>
+              <option value="ALL">All Devices</option>
               {devices.map((d) => (
                 <option key={d.id} value={String(d.id)}>
                   {d.hostname} ({d.vendor})
@@ -204,21 +201,21 @@ const FindingsTab = ({ findings = [], devices = [] }) => {
         </div>
 
         {/* Counter Summary */}
-        <div className="flex flex-wrap items-center justify-between text-xs font-mono text-white/40 pt-2 border-t border-white/[0.08]">
+        <div className="flex flex-wrap items-center justify-between text-xs font-mono text-slate-500 pt-2 border-t border-slate-100">
           <div>
-            Showing <strong className="text-white">{filteredFindings.length}</strong> of{' '}
-            <strong className="text-white">{findings.length}</strong> total compliance findings
+            Showing <strong className="text-slate-900">{filteredFindings.length}</strong> of{' '}
+            <strong className="text-slate-900">{findings.length}</strong> total compliance findings
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-emerald-400 font-semibold">
+            <span className="text-emerald-700 font-semibold">
               {findings.filter((f) => f.status === 'PASS').length} Passed
             </span>
             <span>&bull;</span>
-            <span className="text-rose-400 font-semibold">
+            <span className="text-rose-700 font-semibold">
               {findings.filter((f) => f.status === 'FAIL').length} Failed
             </span>
             <span>&bull;</span>
-            <span className="text-amber-400 font-semibold">
+            <span className="text-amber-700 font-semibold">
               {findings.filter((f) => f.status === 'INCONCLUSIVE').length} Inconclusive
             </span>
           </div>
@@ -226,9 +223,9 @@ const FindingsTab = ({ findings = [], devices = [] }) => {
       </div>
 
       {/* Findings Cards List */}
-      <div className="space-y-3">
+      <div className="space-y-2.5">
         {filteredFindings.length === 0 ? (
-          <div className="rounded-2xl p-12 text-center text-white/40 text-xs italic font-mono bg-[#06060a]/95 border border-white/[0.08]">
+          <div className="rounded-xl p-10 text-center text-slate-400 text-xs italic font-mono bg-white border border-slate-200">
             No compliance findings match your current filter query.
           </div>
         ) : (
@@ -237,51 +234,51 @@ const FindingsTab = ({ findings = [], devices = [] }) => {
             const ev = finding.evidence || {};
             const borderCol =
               finding.status === 'PASS'
-                ? 'border-l-emerald-400'
+                ? 'border-l-emerald-500'
                 : finding.status === 'FAIL'
                 ? 'border-l-rose-500'
-                : 'border-l-amber-400';
+                : 'border-l-amber-500';
 
             return (
               <div
                 key={finding.id}
-                className={`rounded-2xl bg-[#06060a]/95 border border-white/[0.1] border-l-4 ${borderCol} p-4 sm:p-5 transition-all shadow-lg hover:border-white/[0.2]`}
+                className={`rounded-xl bg-white border border-slate-200 border-l-4 ${borderCol} p-4 sm:p-5 transition-all shadow-xs hover:border-slate-300`}
               >
                 {/* Finding Header */}
                 <div
                   onClick={() => setExpandedId(isExpanded ? null : finding.id)}
                   className="flex flex-col md:flex-row md:items-center justify-between gap-3 cursor-pointer"
                 >
-                  <div className="space-y-2 flex-1">
-                    <div className="flex flex-wrap items-center gap-2.5">
+                  <div className="space-y-1.5 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
                       {getStatusBadge(finding.status)}
                       {getSeverityBadge(finding.severity)}
-                      <span className="font-extrabold text-sm text-white font-display">
+                      <span className="font-bold text-sm text-slate-900">
                         {finding.control_code}: {finding.control_name}
                       </span>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-white/50 font-mono">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-slate-500 font-mono">
                       <span>
-                        Target: <strong className="text-white">{finding.device_hostname}</strong> ({finding.device_vendor})
+                        Target: <strong className="text-slate-800">{finding.device_hostname}</strong> ({finding.device_vendor})
                       </span>
                       <span>&bull;</span>
                       <span>
-                        Property: <code className="text-cyan-400">{finding.property_id}</code>
+                        Property: <code className="text-slate-800 bg-slate-100 px-1 py-0.5 rounded font-semibold">{finding.property_id}</code>
                       </span>
                       <span>&bull;</span>
-                      <span className="text-emerald-400">
+                      <span className="text-emerald-700 font-medium">
                         Confidence: {(finding.confidence * 100).toFixed(0)}%
                       </span>
                     </div>
 
                     {/* Mapped Frameworks Badges */}
                     {finding.standard_refs?.length > 0 && (
-                      <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                      <div className="flex flex-wrap items-center gap-1 pt-0.5">
                         {finding.standard_refs.map((ref, idx) => (
                           <span
                             key={idx}
-                            className="px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.08] text-[10px] font-mono text-cyan-300/80"
+                            className="px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200 text-[10px] font-mono text-slate-700"
                           >
                             {ref}
                           </span>
@@ -290,12 +287,12 @@ const FindingsTab = ({ findings = [], devices = [] }) => {
                     )}
                   </div>
 
-                  <div className="flex items-center gap-3 text-xs text-white/50 justify-end self-start md:self-center">
+                  <div className="flex items-center gap-2 text-xs text-slate-500 justify-end self-start md:self-center">
                     <span className="font-mono text-[11px] hidden sm:inline">
                       {isExpanded ? 'Hide Evidence' : 'Inspect Evidence'}
                     </span>
-                    <button className="p-1 rounded-md bg-white/[0.06] text-white/70 hover:text-white">
-                      {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    <button className="p-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">
+                      {isExpanded ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
                     </button>
                   </div>
                 </div>
@@ -307,33 +304,33 @@ const FindingsTab = ({ findings = [], devices = [] }) => {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="mt-4 pt-4 border-t border-white/[0.08] space-y-4 overflow-hidden text-xs"
+                      className="mt-3.5 pt-3.5 border-t border-slate-100 space-y-3 overflow-hidden text-xs"
                     >
                       {/* Control Description */}
                       <div>
-                        <span className="text-white/40 font-mono uppercase tracking-wider text-[10px] block mb-1">
+                        <span className="text-slate-400 font-mono uppercase tracking-wider text-[10px] block mb-0.5">
                           Control Description:
                         </span>
-                        <p className="text-white/80 text-xs leading-relaxed">{finding.description}</p>
+                        <p className="text-slate-700 text-xs leading-relaxed">{finding.description}</p>
                       </div>
 
                       {/* State Comparison: Expected vs Observed */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div className="p-3 rounded-xl bg-black/60 border border-white/[0.08]">
-                          <span className="text-[10px] uppercase text-white/40 font-mono font-semibold block">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                        <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
+                          <span className="text-[10px] uppercase text-slate-500 font-mono font-semibold block">
                             Expected Canonical State:
                           </span>
-                          <div className="font-mono text-emerald-400 font-bold mt-1 text-xs sm:text-sm">
+                          <div className="font-mono text-emerald-700 font-bold mt-0.5 text-xs">
                             {finding.expected_state}
                           </div>
                         </div>
 
-                        <div className="p-3 rounded-xl bg-black/60 border border-white/[0.08]">
-                          <span className="text-[10px] uppercase text-white/40 font-mono font-semibold block">
+                        <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
+                          <span className="text-[10px] uppercase text-slate-500 font-mono font-semibold block">
                             Observed Canonical State:
                           </span>
-                          <div className={`font-mono font-bold mt-1 text-xs sm:text-sm ${
-                            finding.status === 'PASS' ? 'text-emerald-400' : 'text-rose-400'
+                          <div className={`font-mono font-bold mt-0.5 text-xs ${
+                            finding.status === 'PASS' ? 'text-emerald-700' : 'text-rose-700'
                           }`}>
                             {finding.actual_state}
                           </div>
@@ -342,20 +339,20 @@ const FindingsTab = ({ findings = [], devices = [] }) => {
 
                       {/* Exact Code Line Evidence Box */}
                       <div>
-                        <div className="flex items-center justify-between text-[11px] text-white/50 font-mono mb-1.5">
-                          <span className="flex items-center gap-1.5 text-cyan-400 font-bold">
-                            <Code size={13} />
-                            Exact File Line Evidence Reference
+                        <div className="flex items-center justify-between text-[11px] text-slate-500 font-mono mb-1">
+                          <span className="flex items-center gap-1.5 text-slate-800 font-bold">
+                            <Code size={13} className="text-slate-600" />
+                            Configuration File Citation
                           </span>
                           <span>
-                            Origin: <strong className="text-white">{ev.source || 'DETERMINISTIC'}</strong> &bull; Line {ev.line_start || 1}-{ev.line_end || 1}
+                            Origin: <strong className="text-slate-800">{ev.source || 'DETERMINISTIC'}</strong> &bull; Line {ev.line_start || 1}-{ev.line_end || 1}
                           </span>
                         </div>
-                        <div className="bg-black/90 rounded-xl p-3.5 font-mono text-xs text-white/90 border border-white/[0.1] flex items-start gap-4">
-                          <span className="text-white/30 select-none text-right font-bold w-6">
+                        <div className="bg-slate-900 rounded-lg p-3 font-mono text-xs text-slate-100 flex items-start gap-3">
+                          <span className="text-slate-500 select-none text-right font-bold w-6">
                             {ev.line_start || 1}
                           </span>
-                          <span className={finding.status === 'PASS' ? 'text-emerald-300' : 'text-rose-300'}>
+                          <span className={finding.status === 'PASS' ? 'text-emerald-300 font-semibold' : 'text-rose-300 font-semibold'}>
                             {ev.text || '// No explicit configuration syntax match detected in uploaded file'}
                           </span>
                         </div>
@@ -363,11 +360,11 @@ const FindingsTab = ({ findings = [], devices = [] }) => {
 
                       {/* Remediation Guidance */}
                       {finding.remediation && (
-                        <div className="p-3.5 rounded-xl bg-cyan-950/20 border border-cyan-500/20 text-xs space-y-1">
-                          <span className="font-bold text-cyan-400 flex items-center gap-1.5 font-mono">
+                        <div className="p-3 rounded-lg bg-blue-50/70 border border-blue-200 text-xs space-y-0.5">
+                          <span className="font-bold text-blue-900 flex items-center gap-1.5 font-mono text-[11px]">
                             <Shield size={13} /> Recommended Vendor Remediation:
                           </span>
-                          <p className="text-white/80 font-mono text-[11px] leading-relaxed">
+                          <p className="text-blue-950 font-mono text-[11px] leading-relaxed">
                             {finding.remediation}
                           </p>
                         </div>

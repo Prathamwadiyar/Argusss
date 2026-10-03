@@ -129,6 +129,28 @@ def test_counterfactual_simulator(test_db):
     assert res["summary"]["score_gain"] > 0
     assert "generated_cli_script" in res
     assert "transport input ssh" in res["generated_cli_script"]
+    assert "generated_rollback_script" in res
+    assert "transport input all" in res["generated_rollback_script"]
+
+def test_temporal_drift_analysis(test_db):
+    dev1 = Device(hostname="BASELINE-RTR", vendor="Cisco", platform="IOS-XE", raw_content="transport input ssh\nexec-timeout 10 0", source_file_hash="hash1")
+    dev2 = Device(hostname="DRIFTED-RTR", vendor="Cisco", platform="IOS-XE", raw_content="transport input telnet ssh\nexec-timeout 0 0", source_file_hash="hash2")
+    test_db.add_all([dev1, dev2])
+    test_db.commit()
+
+    sp1 = SecurityProperty(device_id=dev1.id, property_id="mgmt.ssh_only", state="SSH_ONLY", confidence=1.0)
+    sp2 = SecurityProperty(device_id=dev2.id, property_id="mgmt.ssh_only", state="TELNET_ALLOWED", confidence=1.0)
+    test_db.add_all([sp1, sp2])
+    test_db.commit()
+
+    from backend.main import analyze_temporal_drift, DriftRequest
+    req = DriftRequest(baseline_device_id=dev1.id, target_device_id=dev2.id)
+    res = analyze_temporal_drift(req, test_db)
+
+    assert res["baseline_device"]["hostname"] == "BASELINE-RTR"
+    assert res["current_device"]["hostname"] == "DRIFTED-RTR"
+    assert res["summary"]["drifted_properties_count"] >= 1
+    assert len(res["line_diffs"]) >= 1
 
 def test_knowledge_reversal(test_db):
     # Register mapping

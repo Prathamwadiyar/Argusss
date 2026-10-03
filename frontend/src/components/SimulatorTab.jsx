@@ -6,13 +6,9 @@ import {
   Terminal,
   ArrowRight,
   CheckCircle,
-  XCircle,
-  AlertTriangle,
   Copy,
   Check,
-  Cpu,
-  BookOpen,
-  Layers
+  RotateCcw
 } from 'lucide-react';
 import { auditService } from '../services/api';
 
@@ -80,114 +76,119 @@ const SimulatorTab = ({ devices = [] }) => {
   const [simulatedChanges, setSimulatedChanges] = useState({
     'mgmt.ssh_only': 'SSH_ONLY',
     'mgmt.timeout': 'RESTRICTED',
+    'auth.password_complexity': 'TRUE',
+    'auth.root_auth': 'REQUIRED',
     'logging.central': 'CENTRAL_ENABLED',
+    'time.ntp': 'NTP_ENABLED',
+    'snmp.secure': 'SECURE',
     'svc.insecure_services': 'DISABLED'
   });
-  const [simulating, setSimulating] = useState(false);
   const [simResult, setSimResult] = useState(null);
+  const [simulating, setSimulating] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [scriptTab, setScriptTab] = useState('remediation'); // 'remediation' | 'rollback'
+
+  const activeDevices = devices && devices.length > 0 ? devices : [
+    { id: 1, hostname: 'CORE-RTR-01', vendor: 'Cisco', platform: 'IOS-XE' },
+    { id: 2, hostname: 'EDGE-SW-01', vendor: 'Juniper', platform: 'Junos' },
+    { id: 3, hostname: 'DC-FW-01', vendor: 'Fortinet', platform: 'FortiOS' },
+    { id: 4, hostname: 'LEGACY-RTR-02', vendor: 'Cisco', platform: 'IOS-Legacy' }
+  ];
 
   useEffect(() => {
-    if (devices.length > 0 && !selectedDeviceId) {
-      const legacyDev = devices.find(
-        (d) => d.hostname.toLowerCase().includes('legacy') || d.hostname.toLowerCase().includes('vulnerable')
-      );
-      setSelectedDeviceId(String(legacyDev ? legacyDev.id : devices[0].id));
+    if (activeDevices.length > 0 && !selectedDeviceId) {
+      const vulnerable = activeDevices.find((d) => d.hostname.toLowerCase().includes('vulnerable') || d.hostname.toLowerCase().includes('legacy'));
+      setSelectedDeviceId(String(vulnerable ? vulnerable.id : activeDevices[0].id));
     }
-  }, [devices]);
+  }, [activeDevices, selectedDeviceId]);
 
-  const togglePropertyProposal = (propId, targetVal) => {
+  const togglePropertyProposal = (propId, val) => {
     setSimulatedChanges((prev) => {
       const next = { ...prev };
       if (next[propId]) {
         delete next[propId];
       } else {
-        next[propId] = targetVal;
+        next[propId] = val;
       }
       return next;
     });
   };
 
   const handleRunSimulation = async () => {
-    if (!selectedDeviceId) return;
+    const devId = selectedDeviceId || (activeDevices[0] ? String(activeDevices[0].id) : '1');
     setSimulating(true);
-
     try {
-      const res = await auditService.runSimulation({
-        device_id: Number(selectedDeviceId),
-        proposed_changes: simulatedChanges
+      const res = await auditService.simulateRemediation({
+        device_id: Number(devId),
+        proposed_changes: simulatedChanges,
       });
       setSimResult(res);
     } catch (err) {
       console.error('Simulation failed', err);
-      alert('Simulation failed: ' + (err.response?.data?.detail || err.message));
     } finally {
       setSimulating(false);
     }
   };
 
   useEffect(() => {
-    if (selectedDeviceId) {
+    if (selectedDeviceId || activeDevices.length > 0) {
       handleRunSimulation();
     }
-  }, [selectedDeviceId]);
+  }, [selectedDeviceId, activeDevices.length]);
 
   const handleCopyScript = () => {
-    if (simResult?.generated_cli_script) {
-      navigator.clipboard.writeText(simResult.generated_cli_script);
+    const scriptText = scriptTab === 'remediation'
+      ? (simResult?.generated_cli_script || simResult?.remediation_script || '')
+      : (simResult?.generated_rollback_script || simResult?.rollback_script || '');
+
+    if (scriptText) {
+      navigator.clipboard.writeText(scriptText);
       setCopied(true);
       setTimeout(() => setCopied(false), 3000);
     }
   };
 
   return (
-    <div className="space-y-8 animate-fadeIn">
+    <div className="space-y-6 animate-fadeIn text-slate-800">
       {/* Header Info */}
-      <div className="minimal-panel p-6 border-white/[0.08] relative overflow-hidden bg-gradient-to-r from-[#07070a] via-[#0d0d14] to-[#07070a]">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="rounded-xl p-5 bg-white border border-slate-200 shadow-sm space-y-2">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="badge badge-cyan text-[10px] tracking-wider uppercase font-mono">
-                SIH26155 &middot; DIF-04
+              <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-200">
+                Remediation Simulator
               </span>
-              <span className="badge badge-white text-[10px] font-mono">
-                Counterfactual Remediation Simulator
-              </span>
+              <h2 className="text-lg font-bold text-slate-900 font-display">
+                Dry-Run &ldquo;What-If&rdquo; Security Simulator
+              </h2>
             </div>
-            <h2 className="text-xl font-bold text-white tracking-tight pt-1">
-              Zero-Risk Dry-Run &ldquo;What-If&rdquo; Security Simulator
-            </h2>
-            <p className="text-xs text-white/50 max-w-3xl leading-relaxed">
-              Predicts exact compliance score improvements and control transitions across CIS Benchmarks, NIST SP 800-53,
-              DISA STIGs, ISO/IEC 27001, and NCIIPC directives before deploying changes. Synthesizes vendor-specific CLI configuration
-              remediation scripts (Cisco, Juniper, Fortinet) without touching live hardware.
+            <p className="text-xs text-slate-600 max-w-3xl leading-relaxed">
+              Predict compliance score improvements and control transitions across CIS, NIST, DISA, and ISO
+              before applying changes. Synthesizes vendor-specific CLI configuration remediation scripts without risk to live hardware.
             </p>
           </div>
-
-          <div className="flex items-center gap-2 self-start md:self-auto">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/60 border border-white/[0.08] text-[11px] font-mono text-white/60">
-              <Shield size={12} className="text-emerald-400" />
-              <span>Offline Dry-Run Sandbox</span>
-            </div>
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-xs font-mono text-emerald-700 font-medium self-start md:self-auto">
+            <Shield size={13} className="text-emerald-600" />
+            <span>Zero-Risk Local Sandbox</span>
           </div>
         </div>
       </div>
 
       {/* Simulator Control Sandbox */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Left: Device Selection & Remediation Fix Toggles */}
-        <div className="lg:col-span-5 minimal-panel p-6 border-white/[0.08] space-y-5">
+        <div className="lg:col-span-5 rounded-xl p-5 bg-white border border-slate-200 shadow-sm space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-white/60 uppercase tracking-wider mb-2 font-mono">
+            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5 font-mono">
               Target Network Appliance:
             </label>
             <select
               value={selectedDeviceId}
               onChange={(e) => setSelectedDeviceId(e.target.value)}
-              className="minimal-input w-full p-2.5 text-xs font-mono bg-black/70 border-white/[0.12] text-white"
+              className="w-full p-2 text-xs font-mono bg-white border border-slate-300 text-slate-900 rounded-lg shadow-xs focus:outline-none"
             >
-              {devices.map((d) => (
-                <option key={d.id} value={String(d.id)} className="bg-[#0e0e14]">
+              {activeDevices.map((d) => (
+                <option key={d.id} value={String(d.id)} className="bg-white text-slate-900">
                   {d.hostname} &mdash; {d.vendor} ({d.platform})
                 </option>
               ))}
@@ -195,11 +196,11 @@ const SimulatorTab = ({ devices = [] }) => {
           </div>
 
           <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-xs font-semibold text-white/60 uppercase tracking-wider font-mono">
-                Select Counterfactual Fixes:
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider font-mono">
+                Select Proposed Fixes:
               </label>
-              <span className="text-[11px] text-cyan-400 font-mono">
+              <span className="text-[11px] text-emerald-700 font-mono font-medium">
                 {Object.keys(simulatedChanges).length} active proposals
               </span>
             </div>
@@ -211,23 +212,22 @@ const SimulatorTab = ({ devices = [] }) => {
                   <div
                     key={opt.id}
                     onClick={() => togglePropertyProposal(opt.id, opt.val)}
-                    className={`p-3.5 rounded-xl border cursor-pointer transition-all flex items-start gap-3 ${
-                      isChecked
-                        ? 'bg-white/[0.06] border-white/30 text-white'
-                        : 'bg-black/40 border-white/[0.06] text-white/50 hover:border-white/[0.12]'
-                    }`}
+                    className={`p-3 rounded-lg border cursor-pointer transition-all flex items-start gap-2.5 ${isChecked
+                        ? 'bg-emerald-50/50 border-emerald-300 text-slate-900'
+                        : 'bg-slate-50 border-slate-200 text-slate-500 hover:border-slate-300'
+                      }`}
                   >
                     <input
                       type="checkbox"
                       checked={isChecked}
-                      onChange={() => {}}
-                      className="mt-0.5 accent-white rounded"
+                      onChange={() => { }}
+                      className="mt-0.5 accent-emerald-600 rounded"
                     />
-                    <div className="space-y-1">
-                      <div className="text-xs font-bold text-white">{opt.label}</div>
-                      <div className="text-[11px] text-white/50 leading-relaxed">{opt.desc}</div>
+                    <div className="space-y-0.5">
+                      <div className="text-xs font-bold text-slate-900">{opt.label}</div>
+                      <div className="text-[11px] text-slate-600 leading-tight">{opt.desc}</div>
                       <div
-                        className="text-[10px] text-cyan-400/80 font-mono pt-0.5"
+                        className="text-[10px] text-slate-500 font-mono pt-0.5"
                         dangerouslySetInnerHTML={{ __html: opt.frameworks }}
                       />
                     </div>
@@ -240,86 +240,85 @@ const SimulatorTab = ({ devices = [] }) => {
           <button
             onClick={handleRunSimulation}
             disabled={simulating}
-            className="w-full py-2.5 rounded-full bg-white text-black font-semibold text-xs hover:bg-white/90 shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all flex items-center justify-center gap-2"
+            className="w-full py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-sm transition-all flex items-center justify-center gap-2"
           >
-            {simulating ? 'Computing Counterfactual Delta...' : 'Run Dry-Run Remediation Simulation'}
+            {simulating ? 'Computing Counterfactual Delta...' : 'Run Dry-Run Simulation'}
           </button>
         </div>
 
         {/* Right: Simulation Delta Scorecard & Generated CLI Script */}
-        <div className="lg:col-span-7 space-y-6">
+        <div className="lg:col-span-7 space-y-5">
           {simResult && (
             <motion.div
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="space-y-6"
+              className="space-y-5"
             >
               {/* Scorecard Hero */}
-              <div className="minimal-panel p-6 border-white/[0.08] bg-[#07070b]">
+              <div className="rounded-xl p-5 bg-white border border-slate-200 shadow-sm">
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-white/40 font-mono">
-                      Predicted Posture Trajectory
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">
+                      Predicted Compliance Trajectory
                     </span>
                     <div className="flex items-baseline gap-3 mt-1 font-mono">
-                      <span className="text-3xl font-bold text-white/40">
+                      <span className="text-3xl font-bold text-slate-400">
                         {simResult.summary.before_score}%
                       </span>
-                      <ArrowRight size={20} className="text-emerald-400" />
-                      <span className="text-4xl font-extrabold text-white">
+                      <ArrowRight size={18} className="text-emerald-600" />
+                      <span className="text-3xl font-extrabold text-slate-900">
                         {simResult.summary.after_score}%
                       </span>
-                      <span className="badge badge-pass text-xs font-mono ml-2">
-                        +{simResult.summary.score_gain}% Projected Gain
+                      <span className="px-2 py-0.5 rounded text-xs font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 ml-1">
+                        +{simResult.summary.score_gain}% Gain
                       </span>
                     </div>
                   </div>
 
                   <div className="text-right">
-                    <span className="badge badge-white text-[10px] font-mono py-1 px-3">
-                      ZERO HARDWARE RISK &middot; DRY-RUN
+                    <span className="px-2.5 py-1 rounded bg-slate-100 border border-slate-200 text-slate-700 text-[10px] font-mono font-semibold">
+                      SAFE DRY-RUN
                     </span>
-                    <div className="text-xs text-white/50 font-mono mt-1">
-                      {simResult.summary.controls_fixed} Violations Eliminated
+                    <div className="text-xs text-slate-600 font-mono mt-1">
+                      {simResult.summary.controls_fixed} Violations Remediated
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Control Deltas Table */}
-              <div className="minimal-panel p-6 border-white/[0.08] space-y-3">
-                <h4 className="text-xs font-semibold text-white/60 uppercase tracking-wider font-mono">
+              <div className="rounded-xl p-5 bg-white border border-slate-200 shadow-sm space-y-2.5">
+                <h4 className="text-xs font-semibold text-slate-700 uppercase tracking-wider font-mono">
                   Predicted Control State Transitions
                 </h4>
-                <div className="space-y-2 max-h-[260px] overflow-y-auto pr-1">
+                <div className="space-y-1.5 max-h-[240px] overflow-y-auto pr-1">
                   {simResult.control_deltas?.map((delta, idx) => (
                     <div
                       key={idx}
-                      className={`p-3 rounded-xl border flex items-center justify-between text-xs ${
-                        delta.is_improved
-                          ? 'bg-emerald-500/[0.04] border-emerald-500/30'
-                          : 'bg-black/60 border-white/[0.06]'
-                      }`}
+                      className={`p-2.5 rounded-lg border flex items-center justify-between text-xs ${delta.is_improved
+                          ? 'bg-emerald-50/60 border-emerald-200'
+                          : 'bg-slate-50 border-slate-200'
+                        }`}
                     >
                       <div className="space-y-0.5">
-                        <div className="font-bold text-white font-mono">
+                        <div className="font-bold text-slate-900 font-mono">
                           {delta.control_code}: {delta.control_name}
                         </div>
-                        <div className="text-[10px] text-white/40 font-mono">
-                          Canonical Property: {delta.property_id}
+                        <div className="text-[10px] text-slate-500 font-mono">
+                          Property: {delta.property_id}
                         </div>
                       </div>
 
                       <div className="flex items-center gap-2 font-mono font-bold text-xs">
-                        <span className={delta.status_before === 'PASS' ? 'text-emerald-400' : 'text-rose-400'}>
+                        <span className={delta.status_before === 'PASS' ? 'text-emerald-700' : 'text-rose-700'}>
                           {delta.status_before}
                         </span>
-                        <ArrowRight size={12} className="text-white/40" />
-                        <span className={delta.status_after === 'PASS' ? 'text-emerald-400' : 'text-rose-400'}>
+                        <ArrowRight size={12} className="text-slate-400" />
+                        <span className={delta.status_after === 'PASS' ? 'text-emerald-700' : 'text-rose-700'}>
                           {delta.status_after}
                         </span>
                         {delta.is_improved && (
-                          <span className="badge badge-pass text-[9px] py-0 px-1.5 ml-1">REMEDIATED</span>
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 ml-1">REMEDIATED</span>
                         )}
                       </div>
                     </div>
@@ -327,24 +326,51 @@ const SimulatorTab = ({ devices = [] }) => {
                 </div>
               </div>
 
-              {/* Generated Vendor CLI Remediation Script */}
-              <div className="minimal-panel p-6 border-white/[0.08] space-y-3">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-semibold text-white uppercase tracking-wider flex items-center gap-1.5 font-mono">
-                    <Terminal size={14} className="text-white/70" />
-                    Synthesized CLI Remediation Script ({simResult.vendor} Native Syntax)
-                  </h4>
+              {/* Synthesized Vendor CLI Script (Remediation & Automated Rollback) */}
+              <div className="rounded-xl p-5 bg-white border border-slate-200 shadow-sm space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-100">
+                  <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-lg">
+                    <button
+                      onClick={() => setScriptTab('remediation')}
+                      className={`px-3 py-1.5 rounded-md text-xs font-semibold font-mono transition-all flex items-center gap-1.5 ${
+                        scriptTab === 'remediation'
+                          ? 'bg-white text-emerald-800 shadow-xs border border-slate-200'
+                          : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      <Terminal size={13} className={scriptTab === 'remediation' ? 'text-emerald-600' : 'text-slate-400'} />
+                      <span>Hardening Remediation Script</span>
+                    </button>
+                    <button
+                      onClick={() => setScriptTab('rollback')}
+                      className={`px-3 py-1.5 rounded-md text-xs font-semibold font-mono transition-all flex items-center gap-1.5 ${
+                        scriptTab === 'rollback'
+                          ? 'bg-amber-500 text-white shadow-xs border border-amber-600'
+                          : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      <RotateCcw size={13} className={scriptTab === 'rollback' ? 'text-white' : 'text-amber-500'} />
+                      <span>Automated Rollback Script</span>
+                    </button>
+                  </div>
+
                   <button
                     onClick={handleCopyScript}
-                    className="px-3 py-1.5 rounded-full bg-white/[0.08] hover:bg-white/[0.14] text-white text-xs flex items-center gap-1.5 transition-all font-mono"
+                    className="px-3 py-1.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs flex items-center gap-1.5 transition-all font-mono self-end sm:self-auto"
                   >
-                    {copied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
-                    <span>{copied ? 'Copied to Clipboard!' : 'Copy Script'}</span>
+                    {copied ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
+                    <span>{copied ? 'Copied!' : scriptTab === 'remediation' ? 'Copy Hardening Script' : 'Copy Rollback Script'}</span>
                   </button>
                 </div>
 
-                <div className="bg-[#040407] p-4 rounded-xl font-mono text-xs text-emerald-400/90 leading-relaxed border border-white/[0.08] max-h-[220px] overflow-y-auto">
-                  <pre>{simResult.generated_cli_script || '// No proposed changes active'}</pre>
+                <div className={`p-4 rounded-lg font-mono text-xs leading-relaxed max-h-[240px] overflow-y-auto ${
+                  scriptTab === 'remediation' ? 'bg-slate-900 text-emerald-400' : 'bg-slate-950 text-amber-300 border border-amber-900/40'
+                }`}>
+                  <pre>
+                    {scriptTab === 'remediation'
+                      ? (simResult.generated_cli_script || simResult.remediation_script || '// No proposed changes active')
+                      : (simResult.generated_rollback_script || simResult.rollback_script || '// No rollback actions generated')}
+                  </pre>
                 </div>
               </div>
             </motion.div>

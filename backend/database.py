@@ -146,8 +146,10 @@ class User(Base):
     org_name = Column(String)
     email = Column(String, unique=True, index=True)
     phone_number = Column(String, nullable=True)
-    role = Column(String, default="Lead Security Auditor")
-    org_type = Column(String, default="Enterprise Infrastructure")
+    role = Column(String, default="auditor") # 'admin' or 'auditor'
+    org_type = Column(String, default="Defense & Critical Infrastructure")
+    department = Column(String, nullable=True)
+    profile_completed = Column(Boolean, default=False)
     password_hash = Column(String, nullable=True)
     firebase_uid = Column(String, index=True, nullable=True)
     photo_url = Column(String, nullable=True)
@@ -159,4 +161,18 @@ def get_db():
         yield db
     finally:
         db.close()
+
+# Auto-migrate columns for SQLite if users table already existed
+try:
+    from sqlalchemy import text
+    with engine.connect() as conn:
+        cols = [row[1] for row in conn.execute(text("PRAGMA table_info(users)")).fetchall()]
+        if cols:
+            if "profile_completed" not in cols:
+                conn.execute(text("ALTER TABLE users ADD COLUMN profile_completed BOOLEAN DEFAULT 0"))
+            if "department" not in cols:
+                conn.execute(text("ALTER TABLE users ADD COLUMN department VARCHAR DEFAULT ''"))
+            conn.commit()
+except Exception as e:
+    pass
 

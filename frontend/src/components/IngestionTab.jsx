@@ -4,18 +4,13 @@ import {
   Upload,
   FileCode,
   Check,
-  AlertCircle,
   X,
-  Shield,
   Server,
   Eye,
   FileText,
   Hash,
-  Cpu,
-  Layers,
   Sparkles,
-  Terminal,
-  Code
+  Terminal
 } from 'lucide-react';
 import { auditService } from '../services/api';
 
@@ -116,7 +111,6 @@ const IngestionTab = ({ auditData, onAuditCreated, onLoadDemo, loadingDemo }) =>
   const [vendorOverride, setVendorOverride] = useState('Auto');
   const [uploading, setUploading] = useState(false);
   const [previewDevice, setPreviewDevice] = useState(null);
-  const [previewLoading, setPreviewLoading] = useState(false);
   const [activeVendorSample, setActiveVendorSample] = useState('cisco');
 
   const handleFileChange = (e) => {
@@ -150,72 +144,64 @@ const IngestionTab = ({ auditData, onAuditCreated, onLoadDemo, loadingDemo }) =>
   };
 
   const handleInspectDevice = async (deviceId) => {
-    setPreviewLoading(true);
     try {
       const devDetails = await auditService.getDeviceDetails(deviceId);
       setPreviewDevice(devDetails);
     } catch (err) {
       console.error('Failed to load device details', err);
-    } finally {
-      setPreviewLoading(false);
     }
   };
 
   const devices = auditData?.devices || [];
 
   return (
-    <div className="space-y-8 animate-fadeIn">
+    <div className="space-y-6 animate-fadeIn text-slate-800">
       {/* Workflow Stage Banner */}
-      <div className="minimal-panel p-6 border-white/[0.08] relative overflow-hidden bg-gradient-to-r from-[#07070a] via-[#0d0d14] to-[#07070a]">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="rounded-xl p-5 bg-white border border-slate-200 shadow-sm space-y-2">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="badge badge-cyan text-[10px] tracking-wider uppercase font-mono">
-                SIH26155 &middot; Stages 01 & 02
+              <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-200">
+                Fleet Ingestion
               </span>
-              <span className="badge badge-white text-[10px] font-mono">
-                Cryptographic Ingestion &amp; Signature Detection
-              </span>
+              <h2 className="text-lg font-bold text-slate-900 font-display">
+                Multi-Vendor Configuration Ingestion
+              </h2>
             </div>
-            <h2 className="text-xl font-bold text-white tracking-tight pt-1">
-              Multi-Vendor CLI Configuration Ingestion
-            </h2>
-            <p className="text-xs text-white/50 max-w-3xl leading-relaxed">
-              Upload raw configuration dumps from heterogeneous enterprise networking equipment. Raw text is hashed with
-              SHA-256 for chain-of-custody non-repudiation, partitioned into hierarchical fragments, and mapped into vendor-neutral canonical security properties.
+            <p className="text-xs text-slate-600 max-w-3xl leading-relaxed">
+              Upload raw configuration files from enterprise routers, switches, and firewalls. All files are cryptographically
+              hashed with SHA-256 for non-repudiation and parsed into canonical security properties.
             </p>
           </div>
 
-          <div className="flex items-center gap-2 self-start md:self-auto">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/60 border border-white/[0.08] text-[11px] font-mono text-white/60">
-              <Hash size={12} className="text-white/40" />
-              <span>SHA-256 Integrity Verification Active</span>
-            </div>
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-mono font-medium self-start md:self-auto">
+            <Hash size={13} className="text-emerald-600" />
+            <span>SHA-256 Chain of Custody</span>
           </div>
         </div>
       </div>
 
       {/* Upload Zone & Pre-Configured Demo Card */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Dropzone */}
-        <div className="lg:col-span-8 minimal-panel p-6 border-white/[0.08] space-y-4">
+        <div className="lg:col-span-8 rounded-xl p-5 bg-white border border-slate-200 shadow-sm space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <Upload size={16} className="text-white" />
-                Upload Configuration Files
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 font-mono uppercase tracking-wider">
+                <Upload size={15} className="text-slate-700" />
+                Upload Configuration Dumps
               </h3>
-              <p className="text-xs text-white/40 mt-0.5">
-                Cisco IOS/IOS-XE (.cfg, .ios), Juniper Junos (.conf, .set), Fortinet FortiOS (.conf, .txt)
+              <p className="text-xs text-slate-500 mt-0.5">
+                Cisco IOS/IOS-XE (.cfg), Juniper Junos (.conf, .set), Fortinet FortiOS (.conf, .txt)
               </p>
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="text-xs text-white/40 font-mono">Vendor Detection:</span>
+              <span className="text-xs text-slate-500 font-mono">Vendor:</span>
               <select
                 value={vendorOverride}
                 onChange={(e) => setVendorOverride(e.target.value)}
-                className="minimal-input text-xs px-2.5 py-1 font-mono text-white/80 bg-black/60 border-white/[0.12]"
+                className="text-xs px-2.5 py-1 font-mono text-slate-800 bg-white border border-slate-300 rounded shadow-xs focus:outline-none"
               >
                 <option value="Auto">Auto-Detect Signatures</option>
                 <option value="Cisco">Force Cisco IOS-XE</option>
@@ -225,7 +211,7 @@ const IngestionTab = ({ auditData, onAuditCreated, onLoadDemo, loadingDemo }) =>
             </div>
           </div>
 
-          <label className="block border border-dashed border-white/[0.15] hover:border-white/50 rounded-xl p-8 text-center cursor-pointer transition-all bg-black/40 hover:bg-white/[0.02] group">
+          <label className="block border-2 border-dashed border-slate-300 hover:border-slate-500 rounded-xl p-7 text-center cursor-pointer transition-all bg-slate-50 hover:bg-slate-100/70 group">
             <input
               type="file"
               multiple
@@ -233,27 +219,27 @@ const IngestionTab = ({ auditData, onAuditCreated, onLoadDemo, loadingDemo }) =>
               onChange={handleFileChange}
               className="hidden"
             />
-            <FileCode size={36} className="mx-auto text-white/30 group-hover:text-white transition-colors mb-3" />
-            <div className="text-sm font-medium text-white/90 group-hover:text-white">
+            <FileCode size={32} className="mx-auto text-slate-400 group-hover:text-slate-700 transition-colors mb-2" />
+            <div className="text-sm font-medium text-slate-800 group-hover:text-slate-900">
               Click to select or drag &amp; drop configuration files
             </div>
-            <p className="text-xs text-white/40 mt-1 font-mono">
-              Accepted: .cfg &middot; .conf &middot; .txt &middot; .ios &middot; .set (Immediate SHA-256 hashing)
+            <p className="text-xs text-slate-500 mt-1 font-mono">
+              Accepted: .cfg &middot; .conf &middot; .txt &middot; .ios &middot; .set (Calculates immediate SHA-256)
             </p>
           </label>
 
           {/* Staged files list */}
           {selectedFiles.length > 0 && (
-            <div className="space-y-3 pt-2">
-              <div className="text-xs font-semibold text-white/60 font-mono">
+            <div className="space-y-3 pt-1">
+              <div className="text-xs font-semibold text-slate-700 font-mono">
                 Staged for Parsing ({selectedFiles.length} files):
               </div>
               <div className="flex flex-wrap gap-2">
                 {selectedFiles.map((file, idx) => (
-                  <span key={idx} className="badge badge-white text-xs py-1 px-3 flex items-center gap-2 font-mono">
-                    <FileText size={12} className="text-cyan-400" />
+                  <span key={idx} className="bg-slate-100 text-slate-800 border border-slate-200 text-xs py-1 px-2.5 rounded-lg flex items-center gap-1.5 font-mono shadow-xs">
+                    <FileText size={12} className="text-slate-600" />
                     {file.name}
-                    <span className="text-[10px] text-white/40">({(file.size / 1024).toFixed(1)} KB)</span>
+                    <span className="text-[10px] text-slate-500">({(file.size / 1024).toFixed(1)} KB)</span>
                   </span>
                 ))}
               </div>
@@ -261,11 +247,11 @@ const IngestionTab = ({ auditData, onAuditCreated, onLoadDemo, loadingDemo }) =>
                 <button
                   onClick={handleUpload}
                   disabled={uploading}
-                  className="px-5 py-2 rounded-full bg-white text-black font-semibold text-xs hover:bg-white/90 shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all flex items-center gap-2"
+                  className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition-all flex items-center gap-2 shadow-sm"
                 >
                   {uploading ? (
                     <>
-                      <div className="w-3 h-3 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                      <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
                       <span>Parsing &amp; Normalizing Fleet...</span>
                     </>
                   ) : (
@@ -280,48 +266,38 @@ const IngestionTab = ({ auditData, onAuditCreated, onLoadDemo, loadingDemo }) =>
           )}
         </div>
 
-        {/* Pre-Configured Demo Fleet Card */}
-        <div className="lg:col-span-4 minimal-panel p-6 border-white/[0.08] flex flex-col justify-between space-y-4">
+        {/* Pre-Configured Benchmark Fleet Card */}
+        <div className="lg:col-span-4 rounded-xl p-5 bg-white border border-slate-200 shadow-sm flex flex-col justify-between space-y-4">
           <div>
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <Server size={16} className="text-white" />
-                SIH26155 Benchmark Fleet
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 font-mono uppercase tracking-wider">
+                <Server size={15} className="text-slate-700" />
+                Benchmark Fleet Suite
               </h3>
-              <span className="badge badge-pass text-[9px] font-mono">4 Devices</span>
+              <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                4 Devices
+              </span>
             </div>
-            <p className="text-xs text-white/50 mt-1.5 leading-relaxed">
-              Instantly ingest the authentic multi-vendor enterprise test suite configured with genuine production-grade CLI samples.
+            <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+              One-click multi-vendor test suite configured with genuine production-grade CLI samples across heterogeneous equipment.
             </p>
 
-            <div className="space-y-2 mt-4 text-xs font-mono">
-              <div className="p-2.5 rounded-lg bg-black/60 border border-white/[0.06] text-white/80 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-white" />
-                  <span>cisco_core_router.cfg</span>
-                </div>
-                <span className="badge badge-white text-[9px]">Cisco IOS-XE</span>
+            <div className="space-y-1.5 mt-3 text-xs font-mono">
+              <div className="p-2 rounded-lg bg-slate-50 border border-slate-200/80 text-slate-800 flex items-center justify-between">
+                <span className="truncate pr-2">cisco_core_router.cfg</span>
+                <span className="px-1.5 py-0.5 rounded bg-white text-slate-700 border border-slate-200 text-[10px] shrink-0">Cisco IOS-XE</span>
               </div>
-              <div className="p-2.5 rounded-lg bg-black/60 border border-white/[0.06] text-white/80 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
-                  <span>juniper_edge_switch.conf</span>
-                </div>
-                <span className="badge badge-white text-[9px]">Juniper Junos</span>
+              <div className="p-2 rounded-lg bg-slate-50 border border-slate-200/80 text-slate-800 flex items-center justify-between">
+                <span className="truncate pr-2">juniper_edge_switch.conf</span>
+                <span className="px-1.5 py-0.5 rounded bg-white text-slate-700 border border-slate-200 text-[10px] shrink-0">Juniper Junos</span>
               </div>
-              <div className="p-2.5 rounded-lg bg-black/60 border border-white/[0.06] text-white/80 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                  <span>fortinet_firewall.conf</span>
-                </div>
-                <span className="badge badge-inc text-[9px]">FortiOS Novel Dialect</span>
+              <div className="p-2 rounded-lg bg-slate-50 border border-slate-200/80 text-slate-800 flex items-center justify-between">
+                <span className="truncate pr-2">fortinet_firewall.conf</span>
+                <span className="px-1.5 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200 text-[10px] shrink-0">Fortinet FortiOS</span>
               </div>
-              <div className="p-2.5 rounded-lg bg-black/60 border border-white/[0.06] text-white/80 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
-                  <span>cisco_legacy_vulnerable.cfg</span>
-                </div>
-                <span className="badge badge-fail text-[9px]">Legacy Non-Compliant</span>
+              <div className="p-2 rounded-lg bg-slate-50 border border-slate-200/80 text-slate-800 flex items-center justify-between">
+                <span className="truncate pr-2">cisco_legacy_vulnerable.cfg</span>
+                <span className="px-1.5 py-0.5 rounded bg-rose-50 text-rose-800 border border-rose-200 text-[10px] shrink-0">Legacy Vulnerable</span>
               </div>
             </div>
           </div>
@@ -329,16 +305,16 @@ const IngestionTab = ({ auditData, onAuditCreated, onLoadDemo, loadingDemo }) =>
           <button
             onClick={onLoadDemo}
             disabled={loadingDemo}
-            className="w-full py-2.5 rounded-full bg-white text-black font-semibold text-xs hover:bg-white/90 shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all text-center flex items-center justify-center gap-2"
+            className="w-full py-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs shadow-sm transition-all text-center flex items-center justify-center gap-2"
           >
             {loadingDemo ? (
               <>
-                <div className="w-3 h-3 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                <span>Auditing Heterogeneous Fleet...</span>
+                <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>Auditing Fleet...</span>
               </>
             ) : (
               <>
-                <Sparkles size={14} />
+                <Sparkles size={14} className="text-emerald-400" />
                 <span>Load Benchmark Demo Fleet</span>
               </>
             )}
@@ -347,19 +323,19 @@ const IngestionTab = ({ auditData, onAuditCreated, onLoadDemo, loadingDemo }) =>
       </div>
 
       {/* Real CLI Archetype Inspector */}
-      <div className="minimal-panel p-6 border-white/[0.08] space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="rounded-xl p-5 bg-white border border-slate-200 shadow-sm space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-100">
           <div>
-            <h3 className="text-sm font-bold text-white flex items-center gap-2">
-              <Terminal size={16} className="text-cyan-400" />
+            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 font-mono uppercase tracking-wider">
+              <Terminal size={15} className="text-slate-700" />
               Vendor CLI Syntax Archetypes (Supported Grammar)
             </h3>
-            <p className="text-xs text-white/40 mt-0.5">
+            <p className="text-xs text-slate-500 mt-0.5">
               Inspect how Argus parses vendor-specific commands into vendor-neutral canonical security properties.
             </p>
           </div>
 
-          <div className="flex items-center gap-1.5 p-1 rounded-lg bg-black/60 border border-white/[0.08]">
+          <div className="flex items-center gap-1 p-1 rounded-lg bg-slate-100 border border-slate-200">
             {Object.keys(VENDOR_SAMPLE_CLIS).map((key) => {
               const sample = VENDOR_SAMPLE_CLIS[key];
               const isActive = activeVendorSample === key;
@@ -367,10 +343,10 @@ const IngestionTab = ({ auditData, onAuditCreated, onLoadDemo, loadingDemo }) =>
                 <button
                   key={key}
                   onClick={() => setActiveVendorSample(key)}
-                  className={`px-3 py-1 rounded-md text-xs font-mono transition-all ${
+                  className={`px-3 py-1 rounded text-xs font-mono transition-all ${
                     isActive
-                      ? 'bg-white text-black font-semibold shadow-sm'
-                      : 'text-white/60 hover:text-white'
+                      ? 'bg-white text-slate-900 font-semibold shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   {sample.vendor}
@@ -380,70 +356,72 @@ const IngestionTab = ({ auditData, onAuditCreated, onLoadDemo, loadingDemo }) =>
           </div>
         </div>
 
-        <div className="bg-[#040407] rounded-xl p-4 border border-white/[0.08] font-mono text-xs overflow-x-auto relative">
-          <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/[0.06] text-white/40 text-[11px]">
-            <span>Role: <strong className="text-white/80">{VENDOR_SAMPLE_CLIS[activeVendorSample].role}</strong></span>
-            <span className="text-cyan-400">Lexical Sectional Parser Active</span>
+        <div className="bg-slate-900 rounded-lg p-4 font-mono text-xs text-slate-100 overflow-x-auto relative">
+          <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-800 text-slate-400 text-[11px]">
+            <span>Role: <strong className="text-slate-200">{VENDOR_SAMPLE_CLIS[activeVendorSample].role}</strong></span>
+            <span className="text-emerald-400 font-semibold">Lexical AST Parser Active</span>
           </div>
-          <pre className="text-white/80 leading-relaxed font-mono whitespace-pre overflow-x-auto">
+          <pre className="text-slate-200 leading-relaxed font-mono whitespace-pre overflow-x-auto text-[11px]">
             {VENDOR_SAMPLE_CLIS[activeVendorSample].code}
           </pre>
         </div>
       </div>
 
       {/* Ingested Fleet Inventory Table */}
-      <div className="minimal-panel p-6 border-white/[0.08] space-y-4">
-        <div className="flex items-center justify-between">
+      <div className="rounded-xl p-5 bg-white border border-slate-200 shadow-sm space-y-3">
+        <div className="flex items-center justify-between pb-2 border-b border-slate-100">
           <div>
-            <h3 className="text-sm font-bold text-white flex items-center gap-2">
-              <Server size={16} className="text-cyan-400" />
+            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 font-mono uppercase tracking-wider">
+              <Server size={15} className="text-slate-700" />
               Active Fleet Device Inventory ({devices.length})
             </h3>
-            <p className="text-xs text-white/40 mt-0.5">
-              All parsed network appliances with detection certainty scores and SHA-256 audit signatures.
+            <p className="text-xs text-slate-500 mt-0.5">
+              Parsed network appliances with detection certainty scores and SHA-256 audit signatures.
             </p>
           </div>
         </div>
 
         {devices.length === 0 ? (
-          <div className="p-12 text-center text-white/40 text-xs italic">
+          <div className="p-8 text-center text-slate-400 text-xs italic font-mono bg-slate-50 rounded-lg">
             No devices ingested in current audit session. Upload files or load demo fleet above.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-white/[0.08] text-white/40 font-mono uppercase tracking-wider text-[11px]">
-                  <th className="py-3 px-4">Hostname</th>
-                  <th className="py-3 px-4">Detected Vendor</th>
-                  <th className="py-3 px-4">Platform OS</th>
-                  <th className="py-3 px-4">Detection Confidence</th>
-                  <th className="py-3 px-4">Cryptographic SHA-256</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
+                <tr className="border-b border-slate-200 text-slate-500 font-mono uppercase tracking-wider text-[11px] bg-slate-50">
+                  <th className="py-2.5 px-3 rounded-l">Hostname</th>
+                  <th className="py-2.5 px-3">Vendor</th>
+                  <th className="py-2.5 px-3">Platform OS</th>
+                  <th className="py-2.5 px-3">Detection Confidence</th>
+                  <th className="py-2.5 px-3">Cryptographic SHA-256</th>
+                  <th className="py-2.5 px-3 text-right rounded-r">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/[0.06]">
+              <tbody className="divide-y divide-slate-100">
                 {devices.map((d) => (
-                  <tr key={d.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="py-3.5 px-4 font-bold text-white font-mono">{d.hostname}</td>
-                    <td className="py-3.5 px-4">
-                      <span className="badge badge-white font-mono text-[10px]">{d.vendor}</span>
+                  <tr key={d.id} className="hover:bg-slate-50/70 transition-colors">
+                    <td className="py-3 px-3 font-bold text-slate-900 font-mono">{d.hostname}</td>
+                    <td className="py-3 px-3">
+                      <span className="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-800 font-mono text-[10px] font-bold">
+                        {d.vendor}
+                      </span>
                     </td>
-                    <td className="py-3.5 px-4 text-white/70 font-mono">{d.platform}</td>
-                    <td className="py-3.5 px-4 font-mono font-bold">
-                      <span className={d.confidence >= 0.9 ? 'text-emerald-400' : 'text-amber-400'}>
+                    <td className="py-3 px-3 text-slate-600 font-mono">{d.platform}</td>
+                    <td className="py-3 px-3 font-mono font-bold">
+                      <span className={d.confidence >= 0.9 ? 'text-emerald-700' : 'text-amber-700'}>
                         {(d.confidence * 100).toFixed(0)}%
                       </span>
                     </td>
-                    <td className="py-3.5 px-4 font-mono text-[11px] text-white/40">
+                    <td className="py-3 px-3 font-mono text-[11px] text-slate-500">
                       {d.source_file_hash ? d.source_file_hash.substring(0, 18) + '...' : 'N/A'}
                     </td>
-                    <td className="py-3.5 px-4 text-right">
+                    <td className="py-3 px-3 text-right">
                       <button
                         onClick={() => handleInspectDevice(d.id)}
-                        className="px-3 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-white text-xs font-medium inline-flex items-center gap-1.5 transition-all"
+                        className="px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium inline-flex items-center gap-1.5 transition-all shadow-xs"
                       >
-                        <Eye size={12} className="text-cyan-400" />
+                        <Eye size={12} className="text-slate-600" />
                         <span>Inspect Raw &amp; Properties</span>
                       </button>
                     </td>
@@ -458,50 +436,52 @@ const IngestionTab = ({ auditData, onAuditCreated, onLoadDemo, loadingDemo }) =>
       {/* Raw Configuration & Fragment Inspector Modal */}
       <AnimatePresence>
         {previewDevice && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
             <motion.div
-              initial={{ opacity: 0, scale: 0.96 }}
+              initial={{ opacity: 0, scale: 0.97 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.96 }}
-              className="minimal-panel w-full max-w-4xl max-h-[85vh] flex flex-col border-white/[0.12] p-6 overflow-hidden bg-[#08080c]"
+              exit={{ opacity: 0, scale: 0.97 }}
+              className="w-full max-w-4xl max-h-[85vh] flex flex-col rounded-xl border border-slate-300 p-6 overflow-hidden bg-white shadow-2xl"
             >
-              <div className="flex items-center justify-between pb-4 border-b border-white/[0.08]">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-200">
                 <div>
-                  <h3 className="text-base font-bold text-white font-mono flex items-center gap-2">
-                    <Server size={16} className="text-cyan-400" />
+                  <h3 className="text-base font-bold text-slate-900 font-mono flex items-center gap-2">
+                    <Server size={16} className="text-slate-700" />
                     {previewDevice.hostname} &mdash; Normalized Audit State
                   </h3>
-                  <div className="text-xs text-white/50 flex items-center gap-3 pt-1 font-mono">
-                    <span>Vendor: <strong className="text-white">{previewDevice.vendor}</strong></span>
+                  <div className="text-xs text-slate-500 flex items-center gap-3 pt-0.5 font-mono">
+                    <span>Vendor: <strong className="text-slate-800">{previewDevice.vendor}</strong></span>
                     <span>&bull;</span>
-                    <span>Platform: <strong className="text-white">{previewDevice.platform}</strong></span>
+                    <span>Platform: <strong className="text-slate-800">{previewDevice.platform}</strong></span>
                     <span>&bull;</span>
-                    <span>Properties Extracted: <strong className="text-emerald-400">{previewDevice.properties?.length || 0}</strong></span>
+                    <span>Properties Extracted: <strong className="text-emerald-700 font-semibold">{previewDevice.properties?.length || 0}</strong></span>
                   </div>
                 </div>
                 <button
                   onClick={() => setPreviewDevice(null)}
-                  className="p-1.5 rounded-lg bg-white/[0.05] text-white/60 hover:text-white transition-all"
+                  className="p-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-all"
                 >
                   <X size={18} />
                 </button>
               </div>
 
-              <div className="overflow-y-auto my-4 space-y-5 pr-1">
+              <div className="overflow-y-auto my-4 space-y-4 pr-1">
                 <div>
-                  <h4 className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-2 font-mono">
-                    Canonical Normalized Security Properties (Stage 04)
+                  <h4 className="text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2 font-mono">
+                    Canonical Normalized Security Properties
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     {previewDevice.properties?.map((p) => (
-                      <div key={p.id} className="p-3 rounded-lg bg-black/60 border border-white/[0.06] flex items-center justify-between text-xs">
+                      <div key={p.id} className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
                         <div className="space-y-0.5">
-                          <span className="font-mono text-cyan-400 font-medium">{p.property_id}</span>
-                          <div className="text-[10px] text-white/40 truncate max-w-[240px]">
+                          <span className="font-mono text-slate-900 font-semibold">{p.property_id}</span>
+                          <div className="text-[10px] text-slate-500 truncate max-w-[240px]">
                             {p.raw_text || '// extracted property'}
                           </div>
                         </div>
-                        <span className={`badge ${p.state === 'UNKNOWN' ? 'badge-inc' : 'badge-pass'} text-[9px] font-mono py-0.5 px-2`}>
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
+                          p.state === 'UNKNOWN' ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                        }`}>
                           {p.state}
                         </span>
                       </div>
@@ -510,19 +490,19 @@ const IngestionTab = ({ auditData, onAuditCreated, onLoadDemo, loadingDemo }) =>
                 </div>
 
                 <div>
-                  <h4 className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-2 font-mono">
-                    Raw Configuration Source Code (With Line Numbers)
+                  <h4 className="text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5 font-mono">
+                    Raw Configuration Source Code
                   </h4>
-                  <div className="bg-[#030306] rounded-xl p-4 font-mono text-xs text-white/80 leading-relaxed overflow-x-auto border border-white/[0.08] max-h-[300px]">
+                  <div className="bg-slate-900 rounded-lg p-3 font-mono text-xs text-slate-100 leading-relaxed overflow-x-auto max-h-[280px]">
                     <pre>{previewDevice.raw_content}</pre>
                   </div>
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-white/[0.08] flex justify-end">
+              <div className="pt-3 border-t border-slate-200 flex justify-end">
                 <button
                   onClick={() => setPreviewDevice(null)}
-                  className="px-4 py-2 rounded-full bg-white text-black font-semibold text-xs hover:bg-white/90 transition-all"
+                  className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs transition-all shadow-sm"
                 >
                   Close Inspector
                 </button>

@@ -25,7 +25,18 @@ export const auditService = {
       return response.data;
     } catch (err) {
       console.warn('Backend unavailable, utilizing offline core engine for upload verification:', err.message);
-      return offlineEngine.loadDemo();
+      return await offlineEngine.uploadConfigs(formData);
+    }
+  },
+
+  async clearAudits() {
+    try {
+      const response = await api.post('/api/audits/clear');
+      offlineEngine.clearAudits();
+      return response.data;
+    } catch (err) {
+      console.warn('Backend unavailable, clearing audits in offline engine:', err.message);
+      return offlineEngine.clearAudits();
     }
   },
 
@@ -189,6 +200,10 @@ export const auditService = {
     }
   },
 
+  async simulateRemediation(payload) {
+    return this.runSimulation(payload);
+  },
+
   // Semantic Diff
   async getSemanticDiff(beforeId, afterId) {
     try {
@@ -199,6 +214,17 @@ export const auditService = {
     } catch (err) {
       console.warn(`Backend unavailable, generating semantic diff between #${beforeId} and #${afterId}:`, err.message);
       return offlineEngine.getSemanticDiff(beforeId, afterId);
+    }
+  },
+
+  // Temporal Drift Analysis
+  async analyzeTemporalDrift(payload = {}) {
+    try {
+      const response = await api.post('/api/drift/analyze', payload);
+      return response.data;
+    } catch (err) {
+      console.warn('Backend unavailable, generating temporal drift analysis from offline engine:', err.message);
+      return offlineEngine.getTemporalDrift(payload.baseline_device_id || 1, payload.target_device_id || 4);
     }
   },
 
@@ -227,6 +253,44 @@ export const auditService = {
 };
 
 export const authService = {
+  async checkStatus(email) {
+    try {
+      const response = await api.post('/api/auth/check-status', { email });
+      return response.data;
+    } catch (err) {
+      console.warn('Backend check-status unavailable, checking local storage:', err.message);
+      const isDemo = email?.toLowerCase().includes('enterprise-defense.org');
+      return {
+        exists: isDemo,
+        is_first_time: !isDemo,
+        profile_completed: isDemo,
+        email
+      };
+    }
+  },
+
+  async completeOnboarding(data) {
+    try {
+      const response = await api.post('/api/auth/complete-onboarding', data);
+      return response.data;
+    } catch (err) {
+      console.warn('Backend onboarding unavailable, saving profile locally:', err.message);
+      const user = {
+        id: Date.now(),
+        email: data.email,
+        full_name: data.full_name,
+        org_name: data.org_name,
+        phone_number: data.phone_number,
+        role: data.role || 'auditor',
+        org_type: data.org_type || 'Defense & Critical Infrastructure',
+        department: data.department || 'Directorate of Cyber Security',
+        firebase_uid: data.firebase_uid,
+        profile_completed: true,
+      };
+      return { success: true, is_first_time: false, profile_completed: true, user };
+    }
+  },
+
   async register(data) {
     try {
       const response = await api.post('/api/auth/register', data);
@@ -239,11 +303,13 @@ export const authService = {
         full_name: data.full_name,
         org_name: data.org_name,
         phone_number: data.phone_number,
-        role: data.role || 'Lead Security Auditor',
-        org_type: data.org_type || 'Enterprise Infrastructure',
+        role: data.role || 'auditor',
+        org_type: data.org_type || 'Defense & Critical Infrastructure',
+        department: data.department || 'Compliance Operations',
         firebase_uid: data.firebase_uid,
+        profile_completed: true,
       };
-      return { success: true, message: 'Profile saved', user };
+      return { success: true, is_first_time: false, profile_completed: true, message: 'Profile saved', user };
     }
   },
 
@@ -253,16 +319,32 @@ export const authService = {
       return response.data;
     } catch (err) {
       console.warn('Backend auth unavailable, verifying credentials locally:', err.message);
+      const isAuditor = (data.role === 'auditor') || (data.email?.toLowerCase().includes('field.auditor') || data.email?.toLowerCase() === 'auditor');
+      const isDemo = data.email?.toLowerCase().includes('enterprise-defense.org') || data.email?.toLowerCase() === 'demo';
+      
+      if (!isDemo && !data.email?.includes('defense')) {
+        // First-time unknown user in offline fallback mode
+        return {
+          success: false,
+          is_first_time: true,
+          profile_completed: false,
+          message: 'First-time user detected. Mandatory enterprise onboarding required.',
+          email: data.email
+        };
+      }
+
       const user = {
-        id: 1,
+        id: isAuditor ? 2 : 1,
         email: data.email,
-        full_name: data.email.split('@')[0] || 'Auditor',
-        org_name: 'Enterprise Security Fleet',
-        role: 'Lead Security Auditor',
-        org_type: 'Enterprise Infrastructure',
+        full_name: isAuditor ? 'Dr. A. Verma (Field Auditor)' : 'Col. R. Sharma (CISO)',
+        org_name: 'National Defense Telecom Core',
+        role: data.role || (isAuditor ? 'auditor' : 'admin'),
+        org_type: 'Defense & Critical Infrastructure',
+        department: isAuditor ? 'Field Inspection & Hardware Security Unit' : 'Directorate of Cyber Defense Operations',
         firebase_uid: data.firebase_uid,
+        profile_completed: true,
       };
-      return { success: true, user };
+      return { success: true, is_first_time: false, profile_completed: true, user };
     }
   },
 
@@ -272,17 +354,25 @@ export const authService = {
       return response.data;
     } catch (err) {
       console.warn('Backend Google sync unavailable, caching profile locally:', err.message);
+      // In offline mode, if it's not the specific demo email, mark as first time
+      const isPreConfigured = data.email === 'google.auditor@enterprise-defense.org';
       const user = {
         id: Date.now(),
         email: data.email,
         full_name: data.full_name,
-        org_name: data.org_name || 'Enterprise Infrastructure',
+        org_name: data.org_name || '',
         photo_url: data.photo_url,
-        role: 'Lead Security Auditor',
-        org_type: 'Enterprise Infrastructure',
+        role: data.role || 'auditor',
+        org_type: 'Defense & Critical Infrastructure',
         firebase_uid: data.firebase_uid,
+        profile_completed: isPreConfigured,
       };
-      return { success: true, user };
+      return {
+        success: true,
+        is_first_time: !isPreConfigured,
+        profile_completed: isPreConfigured,
+        user
+      };
     }
   },
 
