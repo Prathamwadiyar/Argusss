@@ -131,9 +131,6 @@ const LandingPage = ({ onLaunch }) => {
   const descOpacity = useTransform(scrollYProgress, [0.50, 0.68], [0, 1]);
   const descY = useTransform(scrollYProgress, [0.50, 0.68], [25, 0]);
 
-  const ctaOpacity = useTransform(scrollYProgress, [0.58, 0.76], [0, 1]);
-  const ctaY = useTransform(scrollYProgress, [0.58, 0.76], [25, 0]);
-
   // Mini Dialect Sandbox State on Landing Page
   const [sandboxQuery, setSandboxQuery] = useState('set admin-ssh-cipher chacha20-poly1305');
   const [sandboxResult, setSandboxResult] = useState({
@@ -386,7 +383,7 @@ const LandingPage = ({ onLaunch }) => {
           </motion.div>
 
           {/* LAYER 3: Hero Content (Staggered Reveals Synchronized with Black Takeover) (z-20) */}
-          <div className="relative z-20 h-full max-w-7xl mx-auto px-6 w-full flex flex-col justify-center pb-20 pointer-events-none">
+          <div className="relative z-20 h-full max-w-7xl mx-auto px-6 w-full flex flex-col justify-center pt-16 sm:pt-20 pb-12 pointer-events-none">
             
             {/* Main Editorial Typography Stack */}
             <div className="space-y-6 max-w-4xl">
@@ -428,26 +425,6 @@ const LandingPage = ({ onLaunch }) => {
                   Evaluates Cisco IOS-XE, Juniper Junos, and Fortinet FortiOS architectures against CIS Benchmarks,
                   NIST SP 800-53, DISA STIGs, ISO/IEC 27001, and NCIIPC guidelines with 100% offline mathematical proof.
                 </p>
-              </motion.div>
-
-              {/* 4. Hero Direct Console Launch CTA */}
-              <motion.div
-                style={{ opacity: ctaOpacity, y: ctaY }}
-                className="pt-2 pointer-events-auto flex flex-wrap items-center gap-4"
-              >
-                <button
-                  onClick={onLaunch}
-                  className="px-8 py-4 rounded-full bg-white text-black font-extrabold text-xs sm:text-sm tracking-wide hover:bg-emerald-400 hover:text-black transition-all shadow-[0_0_30px_rgba(255,255,255,0.25)] hover:shadow-[0_0_40px_rgba(52,211,153,0.5)] hover:scale-[1.02] inline-flex items-center gap-2.5"
-                >
-                  <span>Launch Auditor Console</span>
-                  <ArrowRight size={15} />
-                </button>
-                <a
-                  href="#paradox"
-                  className="px-6 py-4 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] text-xs font-mono text-zinc-300 hover:text-white transition-all"
-                >
-                  Explore Architecture &darr;
-                </a>
               </motion.div>
             </div>
           </div>
