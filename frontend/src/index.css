@@ -31,6 +31,42 @@
     padding: 0;
     -webkit-font-smoothing: antialiased;
     letter-spacing: -0.01em;
+    touch-action: manipulation;
+  }
+}
+
+/* Global Responsive & Touch Utilities */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-left: -0.5rem;
+  margin-right: -0.5rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .table-responsive {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+.code-responsive {
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: pre;
+  word-break: normal;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ensure mobile touch targets are comfortable (>= 44px) */
+@media (max-width: 640px) {
+  button, input, select, textarea, a {
+    min-height: 38px;
   }
 }
 

@@ -60,31 +60,31 @@ const StackedCard = ({ children, index, total, id, className = "" }) => {
     <div
       ref={containerRef}
       id={id}
-      className="relative min-h-[110vh] w-full"
+      className="relative min-h-[95vh] sm:min-h-[110vh] w-full"
       style={{ zIndex: 10 + index }}
     >
-      <div className="sticky top-16 sm:top-20 w-full px-4 sm:px-6 md:px-8 pb-12">
+      <div className="sticky top-14 sm:top-20 w-full px-3 sm:px-6 md:px-8 pb-8 sm:pb-12">
         <motion.div
           style={{
             scale: isLast ? 1 : scale,
             opacity: isLast ? 1 : opacity,
             y: isLast ? 0 : y,
           }}
-          className={`w-full max-w-7xl mx-auto rounded-3xl bg-[#06060a]/95 backdrop-blur-2xl border border-white/[0.12] p-6 sm:p-10 md:p-14 shadow-[0_-25px_80px_rgba(0,0,0,0.95)] relative overflow-hidden transition-colors ${className}`}
+          className={`w-full max-w-7xl mx-auto rounded-2xl sm:rounded-3xl bg-[#06060a]/95 backdrop-blur-2xl border border-white/[0.12] p-4 sm:p-8 md:p-12 shadow-[0_-25px_80px_rgba(0,0,0,0.95)] relative overflow-hidden transition-colors ${className}`}
         >
           {/* Subtle top edge luminous razor line */}
           <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none" />
           
           {/* Top stack indicator badge */}
-          <div className="flex items-center justify-between pb-5 mb-8 border-b border-white/[0.07]">
-            <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between pb-3 sm:pb-5 mb-5 sm:mb-8 border-b border-white/[0.07]">
+            <div className="flex items-center gap-2.5 sm:gap-3">
               <span className="w-2 h-2 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.7)]" />
-              <span className="font-mono text-[10px] sm:text-xs tracking-[0.25em] uppercase text-white/50">
+              <span className="font-mono text-[10px] sm:text-xs tracking-[0.2em] sm:tracking-[0.25em] uppercase text-white/50">
                 Layer {String(index + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
               </span>
             </div>
-            <div className="font-mono text-[10px] tracking-widest text-white/30 hidden sm:block uppercase">
-              Argus Protocol Framework
+            <div className="font-mono text-[9px] sm:text-[10px] tracking-widest text-white/30 uppercase">
+              Argus Protocol
             </div>
           </div>
 

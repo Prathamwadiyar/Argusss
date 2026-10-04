@@ -104,10 +104,10 @@ const Header = ({
             <select
               value={activeAuditId || ''}
               onChange={(e) => onSelectAudit(Number(e.target.value))}
-              className="text-xs px-3 py-1.5 font-mono text-slate-800 bg-white border border-slate-300 rounded-lg shadow-xs hover:border-slate-400 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              className="text-xs px-2.5 sm:px-3 py-1.5 font-mono text-slate-800 bg-white border border-slate-300 rounded-lg shadow-xs hover:border-slate-400 focus:outline-none focus:ring-1 focus:ring-emerald-500 max-w-[140px] sm:max-w-xs truncate cursor-pointer"
             >
               {audits.map((a) => (
-                <option key={a.id} value={a.id} className="bg-white text-slate-900">
+                <option key={a.id} value={a.id} className="bg-white text-slate-900 truncate">
                   Audit #{a.id} &mdash; {a.title} ({a.input_hash ? a.input_hash.slice(0, 8) : ''})
                 </option>
               ))}
@@ -118,11 +118,12 @@ const Header = ({
           {audits.length > 0 && onClearAudits && (
             <button
               onClick={onClearAudits}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold shadow-xs transition-all"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold shadow-xs transition-all cursor-pointer"
               title="Clear all stored audits to perform a fresh live real-time ingestion"
             >
               <Trash2 size={13} />
-              <span>Clear / Reset</span>
+              <span className="hidden xs:inline">Clear / Reset</span>
+              <span className="xs:hidden">Reset</span>
             </button>
           )}
 
@@ -130,17 +131,18 @@ const Header = ({
           <button
             onClick={onLoadDemo}
             disabled={loadingDemo}
-            className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white text-xs font-semibold shadow-sm transition-all disabled:opacity-50"
+            className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white text-xs font-semibold shadow-sm transition-all disabled:opacity-50 cursor-pointer"
           >
             {loadingDemo ? (
               <>
-                <RefreshCw size={13} className="animate-spin text-white" />
-                <span>Auditing Real-Time...</span>
+                <RefreshCw size={13} className="animate-spin text-white shrink-0" />
+                <span className="truncate">Auditing...</span>
               </>
             ) : (
               <>
-                <Sparkles size={13} className="text-white" />
-                <span>Run Live Audit on Sample Fleet</span>
+                <Sparkles size={13} className="text-white shrink-0" />
+                <span className="hidden sm:inline">Run Live Audit on Sample Fleet</span>
+                <span className="sm:hidden">Run Live Audit</span>
               </>
             )}
           </button>

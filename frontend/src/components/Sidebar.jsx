@@ -135,7 +135,7 @@ const Sidebar = ({
 
       {/* Sidebar Container */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col bg-white border-r border-slate-200 transition-all duration-300 ease-in-out select-none
+        className={`fixed top-0 bottom-0 left-0 h-[100dvh] z-50 flex flex-col bg-white border-r border-slate-200 transition-all duration-300 ease-in-out select-none
           ${isCollapsed ? 'w-20' : 'w-64'}
           ${mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
           shadow-[2px_0_12px_rgba(0,0,0,0.03)]
