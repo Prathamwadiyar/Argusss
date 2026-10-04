@@ -276,13 +276,13 @@ const LandingPage = ({ onLaunch }) => {
 
       {/* Top Header Navigation with Centered Logo & Split Navigation */}
       <nav className="relative z-30 w-full border-b border-white/[0.08] bg-black/40 backdrop-blur-xl sticky top-0 transition-all">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 py-3.5 flex items-center justify-between">
-          {/* Left Nav Group */}
-          <div className="flex items-center gap-5 sm:gap-7 text-xs tracking-wider flex-1 justify-start">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-3 sm:py-3.5 flex items-center justify-between">
+          {/* Left Nav Group - Visible on desktop, hidden on mobile */}
+          <div className="hidden md:flex items-center gap-5 sm:gap-7 text-xs tracking-wider flex-1 justify-start">
             <a href="#paradox" className="text-white/70 hover:text-white transition-colors uppercase font-mono text-[11px]">
               Multi-Vendor
             </a>
-            <a href="#pipeline" className="text-white/70 hover:text-white transition-colors uppercase font-mono text-[11px] hidden md:block">
+            <a href="#pipeline" className="text-white/70 hover:text-white transition-colors uppercase font-mono text-[11px]">
               10-Stage Pipeline
             </a>
             <a href="#differentiators" className="text-white/70 hover:text-white transition-colors uppercase font-mono text-[11px] hidden lg:block">
@@ -290,15 +290,15 @@ const LandingPage = ({ onLaunch }) => {
             </a>
           </div>
 
-          {/* Center Logo */}
+          {/* Center Logo (on desktop centered, on mobile aligned left) */}
           <div 
-            className="flex items-center px-4 shrink-0 group cursor-pointer"
+            className="flex items-center md:px-4 shrink-0 group cursor-pointer"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
             <img
               src="/logo-dark.png"
               alt="Argus Logo"
-              className="h-10 sm:h-12 w-auto object-contain filter drop-shadow-[0_0_18px_rgba(255,255,255,0.4)] group-hover:scale-105 transition-transform duration-300"
+              className="h-8 sm:h-10 md:h-12 w-auto object-contain filter drop-shadow-[0_0_18px_rgba(255,255,255,0.4)] group-hover:scale-105 transition-transform duration-300"
             />
           </div>
 
@@ -312,7 +312,7 @@ const LandingPage = ({ onLaunch }) => {
             </a>
             <button
               onClick={onLaunch}
-              className="px-5 py-2.5 rounded-full bg-white text-black font-semibold text-xs tracking-normal hover:bg-white/90 transition-all flex items-center gap-1.5 shadow-[0_0_25px_rgba(255,255,255,0.3)] hover:scale-[1.02]"
+              className="px-3.5 py-1.5 sm:px-5 sm:py-2.5 rounded-full bg-white text-black font-semibold text-xs tracking-normal hover:bg-white/90 transition-all flex items-center gap-1.5 shadow-[0_0_25px_rgba(255,255,255,0.3)] hover:scale-[1.02] cursor-pointer shrink-0"
             >
               <span>Enter Console</span>
               <ArrowRight size={13} />
@@ -322,9 +322,9 @@ const LandingPage = ({ onLaunch }) => {
       </nav>
 
       {/* CINEMATIC SCROLL-DRIVEN HERO SEQUENCE (PINNED SCENE) */}
-      <section ref={heroRef} className="relative w-full h-[260vh]">
-        {/* Sticky Pinned Viewport Container */}
-        <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col justify-between">
+      <section ref={heroRef} className="relative w-full h-[220vh] sm:h-[260vh]">
+        {/* Sticky Pinned Viewport Container - Dynamic 100dvh on mobile to fit actual browser chrome */}
+        <div className="sticky top-0 h-[100dvh] w-full overflow-hidden flex flex-col justify-between">
           
           {/* LAYER 1: Futuristic, Atmospheric Cyber Background (z-0) */}
           <motion.div
@@ -334,7 +334,7 @@ const LandingPage = ({ onLaunch }) => {
             <img
               src="/Background.webp"
               alt="Cyber Topology Space"
-              className="w-full h-full object-cover object-[center_38%] filter brightness-95 contrast-[105%]"
+              className="w-full h-full object-cover object-[center_42%] sm:object-[center_38%] filter brightness-95 contrast-[105%]"
             />
             {/* Subtle atmospheric radial depth vignette */}
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(2,2,4,0)_40%,rgba(2,2,4,0.3)_100%)]" />
@@ -344,31 +344,32 @@ const LandingPage = ({ onLaunch }) => {
           {/* Minimal Initial Platform Overview (Positioned comfortably above the padlock, fades on scroll) */}
           <motion.div
             style={{ opacity: initialIntroOpacity, y: initialIntroY }}
-            className="absolute top-[6%] sm:top-[7%] md:top-[8%] lg:top-[9%] left-1/2 -translate-x-1/2 flex flex-col items-center text-center px-4 w-full max-w-lg pointer-events-none z-10"
+            className="absolute top-[4%] sm:top-[7%] md:top-[8%] lg:top-[9%] left-1/2 -translate-x-1/2 flex flex-col items-center text-center px-4 w-full max-w-lg pointer-events-none z-10"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.1] text-[10px] sm:text-[11px] font-mono tracking-[0.25em] uppercase text-zinc-400 backdrop-blur-md mb-1.5 sm:mb-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+            <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 sm:px-3 sm:py-1 rounded-full bg-white/[0.04] border border-white/[0.1] text-[9px] sm:text-[11px] font-mono tracking-[0.2em] sm:tracking-[0.25em] uppercase text-zinc-400 backdrop-blur-md mb-1.5 sm:mb-2 whitespace-nowrap shadow-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)] shrink-0" />
               <span>Autonomous <span className="text-emerald-400 font-semibold">Compliance</span> Engine</span>
             </div>
-            <h1 className="font-display font-extrabold text-base sm:text-xl md:text-2xl text-white tracking-tight uppercase leading-snug sm:whitespace-nowrap">
-              Multi-Vendor <span className="text-emerald-400 drop-shadow-[0_0_14px_rgba(52,211,153,0.6)]">Network</span> Auditor
+            <h1 className="font-display font-extrabold text-[17px] xs:text-xl sm:text-xl md:text-2xl text-white tracking-tight uppercase leading-tight sm:leading-snug sm:whitespace-nowrap">
+              <span className="block xs:inline">Multi-Vendor</span>{' '}
+              <span className="text-emerald-400 drop-shadow-[0_0_14px_rgba(52,211,153,0.6)]">Network</span> Auditor
             </h1>
-            <p className="text-[10px] sm:text-xs text-zinc-400 font-mono tracking-wide mt-1 max-w-sm sm:max-w-md">
+            <p className="text-[10px] sm:text-xs text-zinc-400 font-mono tracking-wide mt-1 max-w-[270px] xs:max-w-sm sm:max-w-md">
               Deterministic Security Verification across <span className="text-zinc-200">diverse network infrastructure</span>
             </p>
           </motion.div>
 
-          {/* Minimal Scroll Cue (Visible only at progress = 0, gently fades out immediately on scroll) */}
+          {/* Minimal Scroll Cue (Positioned cleanly inside mobile viewport bounds, visible above bottom browser bar) */}
           <motion.div
             style={{ opacity: scrollHintOpacity, y: scrollHintY }}
-            className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 pointer-events-none z-10"
+            className="absolute bottom-6 sm:bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 sm:gap-3 pointer-events-none z-10"
           >
-            <span className="text-[9px] font-mono tracking-[0.4em] uppercase text-white/40 font-medium">
+            <span className="text-[9px] font-mono tracking-[0.3em] sm:tracking-[0.4em] uppercase text-white/50 font-medium whitespace-nowrap">
               Scroll to Initiate
             </span>
             <motion.div
-              animate={{ opacity: [0.3, 1, 0.3] }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              animate={{ opacity: [0.3, 1, 0.3], y: [0, 4, 0] }}
+              transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
               className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.8)]"
             />
           </motion.div>
@@ -383,24 +384,27 @@ const LandingPage = ({ onLaunch }) => {
           </motion.div>
 
           {/* LAYER 3: Hero Content (Staggered Reveals Synchronized with Black Takeover) (z-20) */}
-          <div className="relative z-20 h-full max-w-7xl mx-auto px-6 w-full flex flex-col justify-center pt-16 sm:pt-20 pb-12 pointer-events-none">
+          <div className="relative z-20 h-full max-w-7xl mx-auto px-5 sm:px-6 w-full flex flex-col justify-center pt-14 sm:pt-20 pb-10 sm:pb-12 pointer-events-none">
             
             {/* Main Editorial Typography Stack */}
-            <div className="space-y-6 max-w-4xl">
+            <div className="space-y-4 sm:space-y-6 max-w-4xl">
               
               {/* 1. Small Eyebrow Badge */}
               <motion.div
                 style={{ opacity: badgeOpacity, y: badgeY }}
                 className="inline-block pointer-events-auto"
               >
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.14] text-xs font-mono tracking-widest uppercase text-white shadow-xl">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
-                  <span>SIH26155 &middot; Deterministic Rules Authoritative &middot; <span className="text-emerald-400 font-semibold">Bounded Local AI</span></span>
+                <div className="inline-flex items-center gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-white/[0.04] border border-white/[0.14] text-[10px] sm:text-xs font-mono tracking-wider sm:tracking-widest uppercase text-white shadow-xl">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)] shrink-0" />
+                  <span>
+                    <span className="hidden sm:inline">SIH26155 &middot; </span>
+                    Deterministic Rules &middot; <span className="text-emerald-400 font-semibold">Bounded Local AI</span>
+                  </span>
                 </div>
               </motion.div>
 
               {/* 2. Main Headline (Staggered Line-by-Line Reveal) */}
-              <div className="space-y-1 font-display font-extrabold uppercase tracking-tight text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[0.94] text-white">
+              <div className="space-y-1 font-display font-extrabold uppercase tracking-tight text-[28px] xs:text-3xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.04] sm:leading-[0.94] text-white">
                 <motion.div style={{ opacity: line1Opacity, y: line1Y }}>
                   PROVABLE{' '}
                   <span className="font-serif-luxury italic font-normal tracking-normal text-emerald-400 drop-shadow-[0_0_24px_rgba(52,211,153,0.35)] lowercase">
@@ -420,7 +424,7 @@ const LandingPage = ({ onLaunch }) => {
                 style={{ opacity: descOpacity, y: descY }}
                 className="max-w-2xl pointer-events-auto"
               >
-                <p className="text-base sm:text-lg text-white/80 leading-relaxed font-normal">
+                <p className="text-xs sm:text-base md:text-lg text-white/80 leading-relaxed font-normal">
                   The AI-driven multi-vendor security compliance auditor built strictly according to SIH26155 TRD/PRD.
                   Evaluates Cisco IOS-XE, Juniper Junos, and Fortinet FortiOS architectures against CIS Benchmarks,
                   NIST SP 800-53, DISA STIGs, ISO/IEC 27001, and NCIIPC guidelines with 100% offline mathematical proof.
@@ -563,14 +567,14 @@ const LandingPage = ({ onLaunch }) => {
               ))}
             </div>
 
-            <div className="p-4 rounded-xl bg-black/60 border border-white/[0.08] flex items-center justify-between text-xs font-mono text-white/60">
+            <div className="p-4 rounded-xl bg-black/60 border border-white/[0.08] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-mono text-white/60">
               <span className="text-emerald-400 flex items-center gap-2 font-medium">
-                <Check size={14} className="text-emerald-400" /> Zero Cloud Call Guarantee
+                <Check size={14} className="text-emerald-400 shrink-0" /> Zero Cloud Call Guarantee
               </span>
-              <span>100% Offline Local Execution &bull; Airplane Mode Validated</span>
+              <span className="hidden xs:inline">100% Offline Local Execution &bull; Airplane Mode Validated</span>
               <button
                 onClick={onLaunch}
-                className="text-emerald-400 hover:text-emerald-300 font-semibold underline flex items-center gap-1 transition-colors"
+                className="text-emerald-400 hover:text-emerald-300 font-semibold underline flex items-center gap-1 transition-colors cursor-pointer"
               >
                 Run Ingestion in Console &rarr;
               </button>
