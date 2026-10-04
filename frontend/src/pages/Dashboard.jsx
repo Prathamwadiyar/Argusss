@@ -54,10 +54,11 @@ const Dashboard = ({ onBack, currentUser, onSignOut, onUpdateUser }) => {
     setLoading(true);
     try {
       const allAudits = await auditService.listAudits();
-      setAudits(allAudits);
+      const safeAudits = Array.isArray(allAudits) ? allAudits : [];
+      setAudits(safeAudits);
 
-      if (allAudits.length > 0) {
-        const latestId = allAudits[0].id;
+      if (safeAudits.length > 0 && safeAudits[0]?.id) {
+        const latestId = safeAudits[0].id;
         setActiveAuditId(latestId);
         await loadAuditDetails(latestId);
       } else {
@@ -67,19 +68,21 @@ const Dashboard = ({ onBack, currentUser, onSignOut, onUpdateUser }) => {
       }
     } catch (err) {
       console.error('Failed to load audits', err);
+      setAudits([]);
     } finally {
       setLoading(false);
     }
   };
 
   const loadAuditDetails = async (auditId) => {
+    if (!auditId) return;
     try {
       const [details, findingsList] = await Promise.all([
         auditService.getAudit(auditId),
         auditService.getAuditFindings(auditId)
       ]);
-      setAuditData(details);
-      setFindings(findingsList);
+      setAuditData(details && typeof details === 'object' && !Array.isArray(details) ? details : null);
+      setFindings(Array.isArray(findingsList) ? findingsList : []);
     } catch (err) {
       console.error('Failed to load audit details', err);
     }

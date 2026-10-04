@@ -15,6 +15,26 @@ export const api = axios.create({
   timeout: 5000,
 });
 
+// Detect when a request to /api/* hits a static host serving index.html (SPA fallback)
+api.interceptors.response.use(
+  (response) => {
+    const contentType = response.headers?.['content-type'] || '';
+    if (
+      typeof response.data === 'string' &&
+      (contentType.includes('text/html') ||
+       response.data.trim().startsWith('<!DOCTYPE') ||
+       response.data.trim().startsWith('<!doctype') ||
+       response.data.trim().startsWith('<html'))
+    ) {
+      const err = new Error('Static host returned index.html SPA fallback. Switching to offline engine.');
+      err.isHtmlFallback = true;
+      return Promise.reject(err);
+    }
+    return response;
+  },
+  (error) => Promise.reject(error)
+);
+
 export const auditService = {
   // Ingestion & Audits
   async uploadConfigs(formData) {
@@ -53,17 +73,21 @@ export const auditService = {
   async listAudits() {
     try {
       const response = await api.get('/api/audits');
-      return response.data;
+      return Array.isArray(response.data) ? response.data : offlineEngine.getAudits();
     } catch (err) {
       console.warn('Backend unavailable, listing audits from offline store:', err.message);
-      return offlineEngine.getAudits();
+      const audits = offlineEngine.getAudits();
+      return Array.isArray(audits) ? audits : [];
     }
   },
 
   async getAudit(auditId) {
     try {
       const response = await api.get(`/api/audits/${auditId}`);
-      return response.data;
+      if (response.data && typeof response.data === 'object' && !Array.isArray(response.data)) {
+        return response.data;
+      }
+      return offlineEngine.getAudit(auditId);
     } catch (err) {
       console.warn(`Backend unavailable, retrieving audit #${auditId} from offline store:`, err.message);
       return offlineEngine.getAudit(auditId);
@@ -73,10 +97,11 @@ export const auditService = {
   async getAuditFindings(auditId, params = {}) {
     try {
       const response = await api.get(`/api/audits/${auditId}/findings`, { params });
-      return response.data;
+      return Array.isArray(response.data) ? response.data : offlineEngine.getFindings(auditId, params);
     } catch (err) {
       console.warn(`Backend unavailable, retrieving findings for #${auditId} from offline store:`, err.message);
-      return offlineEngine.getFindings(auditId, params);
+      const findings = offlineEngine.getFindings(auditId, params);
+      return Array.isArray(findings) ? findings : [];
     }
   },
 
@@ -278,15 +303,22 @@ export const authService = {
       const user = {
         id: Date.now(),
         email: data.email,
-        full_name: data.full_name,
-        org_name: data.org_name,
-        phone_number: data.phone_number,
-        role: data.role || 'auditor',
+        full_name: data.full_name || 'Authorized Auditor',
+        org_name: data.org_name || 'National Defense Telecom Core',
+        phone_number: data.phone_number || '+91 98765 43210',
+        role: data.role || 'admin',
         org_type: data.org_type || 'Defense & Critical Infrastructure',
         department: data.department || 'Directorate of Cyber Security',
         firebase_uid: data.firebase_uid,
         profile_completed: true,
       };
+      try {
+        const stored = JSON.parse(localStorage.getItem('argus_registered_users') || '[]');
+        const existingIdx = stored.findIndex(u => u.email?.toLowerCase() === user.email?.toLowerCase());
+        if (existingIdx >= 0) stored[existingIdx] = user;
+        else stored.push(user);
+        localStorage.setItem('argus_registered_users', JSON.stringify(stored));
+      } catch (e) {}
       return { success: true, is_first_time: false, profile_completed: true, user };
     }
   },
@@ -300,15 +332,22 @@ export const authService = {
       const user = {
         id: Date.now(),
         email: data.email,
-        full_name: data.full_name,
-        org_name: data.org_name,
-        phone_number: data.phone_number,
-        role: data.role || 'auditor',
+        full_name: data.full_name || 'Authorized Auditor',
+        org_name: data.org_name || 'National Defense Telecom Core',
+        phone_number: data.phone_number || '+91 98765 43210',
+        role: data.role || 'admin',
         org_type: data.org_type || 'Defense & Critical Infrastructure',
         department: data.department || 'Compliance Operations',
         firebase_uid: data.firebase_uid,
         profile_completed: true,
       };
+      try {
+        const stored = JSON.parse(localStorage.getItem('argus_registered_users') || '[]');
+        const existingIdx = stored.findIndex(u => u.email?.toLowerCase() === user.email?.toLowerCase());
+        if (existingIdx >= 0) stored[existingIdx] = user;
+        else stored.push(user);
+        localStorage.setItem('argus_registered_users', JSON.stringify(stored));
+      } catch (e) {}
       return { success: true, is_first_time: false, profile_completed: true, message: 'Profile saved', user };
     }
   },
@@ -319,23 +358,21 @@ export const authService = {
       return response.data;
     } catch (err) {
       console.warn('Backend auth unavailable, verifying credentials locally:', err.message);
-      const isAuditor = (data.role === 'auditor') || (data.email?.toLowerCase().includes('field.auditor') || data.email?.toLowerCase() === 'auditor');
-      const isDemo = data.email?.toLowerCase().includes('enterprise-defense.org') || data.email?.toLowerCase() === 'demo';
+      const email = (data.email || '').trim().toLowerCase();
+      const isAuditor = (data.role === 'auditor') || email.includes('field.auditor') || email === 'auditor';
       
-      if (!isDemo && !data.email?.includes('defense')) {
-        // First-time unknown user in offline fallback mode
-        return {
-          success: false,
-          is_first_time: true,
-          profile_completed: false,
-          message: 'First-time user detected. Mandatory enterprise onboarding required.',
-          email: data.email
-        };
-      }
+      // Check if user previously registered in localStorage
+      try {
+        const stored = JSON.parse(localStorage.getItem('argus_registered_users') || '[]');
+        const foundUser = stored.find(u => u.email?.toLowerCase() === email);
+        if (foundUser) {
+          return { success: true, is_first_time: false, profile_completed: true, user: foundUser };
+        }
+      } catch (e) {}
 
       const user = {
         id: isAuditor ? 2 : 1,
-        email: data.email,
+        email: data.email || (isAuditor ? 'field.auditor@enterprise-defense.org' : 'auditor@enterprise-defense.org'),
         full_name: isAuditor ? 'Dr. A. Verma (Field Auditor)' : 'Col. R. Sharma (CISO)',
         org_name: 'National Defense Telecom Core',
         role: data.role || (isAuditor ? 'auditor' : 'admin'),
@@ -354,23 +391,23 @@ export const authService = {
       return response.data;
     } catch (err) {
       console.warn('Backend Google sync unavailable, caching profile locally:', err.message);
-      // In offline mode, if it's not the specific demo email, mark as first time
-      const isPreConfigured = data.email === 'google.auditor@enterprise-defense.org';
       const user = {
         id: Date.now(),
-        email: data.email,
-        full_name: data.full_name,
-        org_name: data.org_name || '',
-        photo_url: data.photo_url,
-        role: data.role || 'auditor',
+        email: data.email || 'google.auditor@enterprise-defense.org',
+        full_name: data.full_name || 'Authorized Google Enterprise Auditor',
+        org_name: data.org_name || 'National Defense Telecom Core',
+        phone_number: data.phone_number || '+91 98765 43210',
+        photo_url: data.photo_url || '',
+        role: data.role || 'admin',
         org_type: 'Defense & Critical Infrastructure',
+        department: 'Directorate of Cyber Security',
         firebase_uid: data.firebase_uid,
-        profile_completed: isPreConfigured,
+        profile_completed: true,
       };
       return {
         success: true,
-        is_first_time: !isPreConfigured,
-        profile_completed: isPreConfigured,
+        is_first_time: false,
+        profile_completed: true,
         user
       };
     }

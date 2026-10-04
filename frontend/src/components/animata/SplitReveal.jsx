@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 /**
  * SplitReveal Component (Adapted from Animata Preloader Split Reveal)
@@ -10,10 +10,12 @@ export default function SplitReveal({
   onComplete,
   title = "INITIALIZING DETERMINISTIC AUDIT CORE",
   subtitle = "Zero-Cloud Air-Gapped Network Verification Engine &middot; SIH26155",
-  duration = 850, // ms duration for the shutter split animation
+  duration = 750, // ms duration for the shutter split animation
 }) {
   const [phase, setPhase] = useState('loading'); // 'loading' | 'fade-ui' | 'reveal' | 'done'
   const [progress, setProgress] = useState(0);
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
 
   useEffect(() => {
     if (!active) {
@@ -26,7 +28,17 @@ export default function SplitReveal({
     setProgress(0);
 
     const startTime = Date.now();
-    const loadDuration = 600; // ms to reach 100% progress
+    const loadDuration = 400; // Snappy progress load
+    let finished = false;
+
+    const completeAll = () => {
+      if (finished) return;
+      finished = true;
+      setPhase('done');
+      if (onCompleteRef.current) {
+        onCompleteRef.current();
+      }
+    };
 
     const interval = setInterval(() => {
       const elapsed = Date.now() - startTime;
@@ -46,16 +58,23 @@ export default function SplitReveal({
 
             // Step 3: Complete transition and notify caller
             setTimeout(() => {
-              setPhase('done');
-              if (onComplete) onComplete();
+              completeAll();
             }, duration);
-          }, 200);
-        }, 120);
+          }, 140);
+        }, 80);
       }
     }, 20);
 
-    return () => clearInterval(interval);
-  }, [active, duration, onComplete]);
+    // Hard fallback safety watchdog: ensure shutter never hangs on screen
+    const safetyTimer = setTimeout(() => {
+      completeAll();
+    }, 1400);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(safetyTimer);
+    };
+  }, [active, duration]);
 
   if (!active || phase === 'done') return null;
 
