@@ -32,20 +32,24 @@ def test_first_time_email_login_is_gated():
     assert data["profile_completed"] is False
     assert "Mandatory" in data["message"] or "First-time" in data["message"]
 
-def test_first_time_google_auth_requires_onboarding():
-    """Verify that Google SSO for a new user flags is_first_time=True and profile_completed=False."""
-    res = client.post("/api/auth/google", json={
-        "email": "new.google.user@gmail.com",
-        "full_name": "New Google User",
-        "firebase_uid": "test_google_uid_101",
-        "photo_url": "https://example.com/photo.jpg"
+def test_manual_register_organization():
+    """Verify that manual registration with complete organization details succeeds and grants access."""
+    res = client.post("/api/auth/register", json={
+        "email": "brand_new_auditor_2026@testcorp.com",
+        "full_name": "Auditor Vikram Batra",
+        "org_name": "Strategic Cyber Infrastructure",
+        "phone_number": "+91 98765 88888",
+        "role": "auditor",
+        "org_type": "Defense & Critical Infrastructure",
+        "department": "Security Ops",
+        "password": "Password@2026"
     })
     assert res.status_code == 200
     data = res.json()
     assert data["success"] is True
-    assert data["is_first_time"] is True
-    assert data["profile_completed"] is False
-    assert data["user"]["profile_completed"] is False
+    assert data["profile_completed"] is True
+    assert data["is_first_time"] is False
+    assert data["user"]["email"] == "brand_new_auditor_2026@testcorp.com"
 
 def test_complete_onboarding_validation_rejects_missing_fields():
     """Verify server-side validation rejects incomplete onboarding submissions."""

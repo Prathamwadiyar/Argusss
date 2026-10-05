@@ -17,13 +17,12 @@ import {
   Check,
   BadgeCheck
 } from 'lucide-react';
-import { auth, googleProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword } from '../services/firebase';
+import { auth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from '../services/firebase';
 import { authService } from '../services/api';
 
 const LoginPage = ({ onLoginSuccess, onBackToLanding }) => {
   const [isRegister, setIsRegister] = useState(false);
   const [isOnboarding, setIsOnboarding] = useState(false);
-  const [onboardingSource, setOnboardingSource] = useState('email'); // 'google' | 'email'
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
@@ -54,73 +53,6 @@ const LoginPage = ({ onLoginSuccess, onBackToLanding }) => {
     setIsOnboarding(false);
     setError('');
     setSuccessMsg('');
-  };
-
-  // Google Sign-In with Firebase & First-Time Security Gate
-  const handleGoogleSignIn = async () => {
-    setLoading(true);
-    setError('');
-    setSuccessMsg('');
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const fbUser = result.user;
-
-      // Sync with backend database to verify security profile status
-      const backendRes = await authService.googleAuth({
-        email: fbUser.email,
-        full_name: fbUser.displayName || '',
-        firebase_uid: fbUser.uid,
-        photo_url: fbUser.photoURL || '',
-        org_name: formData.orgName || '',
-        phone_number: fbUser.phoneNumber || formData.phone || '',
-        role: formData.role
-      });
-
-      if (backendRes.success) {
-        // Enforce First-Time Security Clearance Gate:
-        if (backendRes.is_first_time || !backendRes.profile_completed) {
-          setIsOnboarding(true);
-          setOnboardingSource('google');
-          setFormData(prev => ({
-            ...prev,
-            email: fbUser.email,
-            fullName: fbUser.displayName || prev.fullName || fbUser.email.split('@')[0].replace(/[._]/g, ' ').toUpperCase(),
-            firebaseUid: fbUser.uid,
-            photoUrl: fbUser.photoURL || ''
-          }));
-          setSuccessMsg('Google Identity verified. Mandatory enterprise security clearance onboarding required before console access.');
-          return;
-        }
-
-        const u = { ...backendRes.user, role: backendRes.user.role || formData.role };
-        localStorage.setItem('argus_user', JSON.stringify(u));
-        onLoginSuccess(u);
-      }
-    } catch (err) {
-      console.error('Firebase Google Sign In Error:', err);
-      
-      if (err.code === 'auth/configuration-not-found' || err.message?.includes('configuration-not-found')) {
-        console.warn('Firebase Auth Google Provider not enabled in Console. Using fallback first-time onboarding...');
-        // Hold at onboarding with verified fallback identity
-        setIsOnboarding(true);
-        setOnboardingSource('google');
-        setFormData(prev => ({
-          ...prev,
-          email: 'google.auditor@enterprise-defense.org',
-          fullName: 'Authorized Google Enterprise Auditor',
-          firebaseUid: 'google_fallback_uid_2026'
-        }));
-        setSuccessMsg('Google Workspace Identity verified. Complete enterprise security clearance profile below.');
-      } else if (err.code === 'auth/popup-closed-by-user') {
-        setError('Google sign-in was cancelled.');
-      } else if (err.code === 'auth/unauthorized-domain') {
-        setError('Domain not yet whitelisted in Firebase Console. You can sign in using work email or 1-Click Demo below.');
-      } else {
-        setError(err.message || 'Google authentication failed. Please try again.');
-      }
-    } finally {
-      setLoading(false);
-    }
   };
 
   // Submit Handler for Onboarding, Registration, and Login
@@ -238,7 +170,6 @@ const LoginPage = ({ onLoginSuccess, onBackToLanding }) => {
         // Check if first-time user detected
         if (res.is_first_time || !res.profile_completed) {
           setIsOnboarding(true);
-          setOnboardingSource('email');
           setFormData(prev => ({
             ...prev,
             email: formData.email,
@@ -336,28 +267,6 @@ const LoginPage = ({ onLoginSuccess, onBackToLanding }) => {
       localStorage.setItem('argus_user', JSON.stringify(fallbackUser));
     } catch (e) {}
     onLoginSuccess(fallbackUser);
-    setLoading(false);
-  };
-
-  // Direct Evaluator Google Bypass (Used when Firebase rejects domain whitelist)
-  const handleOfflineGoogleBypass = () => {
-    setLoading(true);
-    const googleUser = {
-      id: 99,
-      email: 'auditor.google@enterprise-defense.org',
-      full_name: 'Authorized Google Enterprise Auditor',
-      org_name: 'Alphabet / National Defense Cloud',
-      phone_number: '+1 (650) 253-0000',
-      role: formData.role || 'admin',
-      org_type: 'Defense & Critical Infrastructure',
-      department: 'Cloud Security Audit Team',
-      profile_completed: true,
-      firebase_uid: 'google_offline_bypass_uid'
-    };
-    try {
-      localStorage.setItem('argus_user', JSON.stringify(googleUser));
-    } catch (e) {}
-    onLoginSuccess(googleUser);
     setLoading(false);
   };
 
@@ -490,22 +399,6 @@ const LoginPage = ({ onLoginSuccess, onBackToLanding }) => {
                 </p>
               </div>
 
-              {/* Verified Identity Source Tag */}
-              {onboardingSource === 'google' && (
-                <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <BadgeCheck size={16} className="text-blue-400 shrink-0" />
-                    <div>
-                      <div className="font-semibold text-[11px]">Google Workspace Verified</div>
-                      <div className="text-[10px] text-zinc-400 font-mono">{formData.email}</div>
-                    </div>
-                  </div>
-                  <span className="text-[9px] font-mono uppercase bg-blue-500/20 px-2 py-0.5 rounded text-blue-300">
-                    SSO Active
-                  </span>
-                </div>
-              )}
-
               {/* Alerts */}
               {error && (
                 <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs flex items-start gap-2.5 animate-fadeIn">
@@ -580,7 +473,7 @@ const LoginPage = ({ onLoginSuccess, onBackToLanding }) => {
                   </div>
                 </div>
 
-                {/* Work Email (Locked if from Google or specified) & Emergency Phone */}
+                {/* Work Email & Emergency Phone */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-[10px] font-mono uppercase text-zinc-400 tracking-wider mb-1">
@@ -592,13 +485,8 @@ const LoginPage = ({ onLoginSuccess, onBackToLanding }) => {
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
-                        readOnly={onboardingSource === 'google'}
                         required
-                        className={`w-full px-3.5 py-2.5 pl-9 rounded-xl border text-xs outline-none transition-all font-mono ${
-                          onboardingSource === 'google'
-                            ? 'bg-white/[0.01] border-emerald-500/30 text-emerald-300 cursor-not-allowed'
-                            : 'bg-white/[0.02] border-white/[0.08] text-white focus:border-emerald-400/80'
-                        }`}
+                        className="w-full px-3.5 py-2.5 pl-9 rounded-xl border text-xs outline-none transition-all font-mono bg-white/[0.02] border-white/[0.08] text-white focus:border-emerald-400/80"
                       />
                       <Mail size={13} className="absolute left-3 top-3 text-zinc-500" />
                     </div>
@@ -769,7 +657,7 @@ const LoginPage = ({ onLoginSuccess, onBackToLanding }) => {
                 <p className="text-xs text-zinc-400">
                   {isRegister
                     ? 'Create a centralized compliance profile for your organization.'
-                    : 'Enter your credentials or continue with Google Workspace.'}
+                    : 'Enter your enterprise credentials to access the compliance console.'}
                 </p>
               </div>
 
@@ -806,16 +694,6 @@ const LoginPage = ({ onLoginSuccess, onBackToLanding }) => {
                     <AlertCircle size={15} className="shrink-0 mt-0.5 text-rose-400" />
                     <div className="leading-relaxed">{error}</div>
                   </div>
-                  {(error.toLowerCase().includes('whitelist') || error.toLowerCase().includes('domain')) && (
-                    <button
-                      type="button"
-                      onClick={handleOfflineGoogleBypass}
-                      className="w-full mt-1 py-2 px-3 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs font-mono font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
-                    >
-                      <Sparkles size={13} className="text-emerald-400" />
-                      <span>Continue with Google Enterprise Clearance (1-Click)</span>
-                    </button>
-                  )}
                 </div>
               )}
 
@@ -825,42 +703,6 @@ const LoginPage = ({ onLoginSuccess, onBackToLanding }) => {
                   <div>{successMsg}</div>
                 </div>
               )}
-
-              {/* GOOGLE SSO BUTTON */}
-              <button
-                type="button"
-                onClick={handleGoogleSignIn}
-                disabled={loading}
-                className="w-full flex items-center justify-center gap-3 px-4 py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08] hover:border-emerald-500/30 text-xs font-medium text-white transition-all shadow-sm group disabled:opacity-50"
-              >
-                <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
-                  <path
-                    fill="#4285F4"
-                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                  />
-                  <path
-                    fill="#34A853"
-                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                  />
-                  <path
-                    fill="#FBBC05"
-                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-                  />
-                  <path
-                    fill="#EA4335"
-                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-                  />
-                </svg>
-                <span>Continue with Google</span>
-              </button>
-
-              {/* Minimal Divider */}
-              <div className="relative flex items-center justify-center py-1">
-                <div className="w-full border-t border-white/[0.06]" />
-                <span className="absolute px-3 bg-[#020204] text-[10px] font-mono tracking-widest text-zinc-500 uppercase">
-                  Or Work Email
-                </span>
-              </div>
 
               {/* Form */}
               <form onSubmit={handleSubmit} className="space-y-3.5">

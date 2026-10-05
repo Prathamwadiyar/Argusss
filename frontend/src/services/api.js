@@ -385,34 +385,6 @@ export const authService = {
     }
   },
 
-  async googleAuth(data) {
-    try {
-      const response = await api.post('/api/auth/google', data);
-      return response.data;
-    } catch (err) {
-      console.warn('Backend Google sync unavailable, caching profile locally:', err.message);
-      const user = {
-        id: Date.now(),
-        email: data.email || 'google.auditor@enterprise-defense.org',
-        full_name: data.full_name || 'Authorized Google Enterprise Auditor',
-        org_name: data.org_name || 'National Defense Telecom Core',
-        phone_number: data.phone_number || '+91 98765 43210',
-        photo_url: data.photo_url || '',
-        role: data.role || 'admin',
-        org_type: 'Defense & Critical Infrastructure',
-        department: 'Directorate of Cyber Security',
-        firebase_uid: data.firebase_uid,
-        profile_completed: true,
-      };
-      return {
-        success: true,
-        is_first_time: false,
-        profile_completed: true,
-        user
-      };
-    }
-  },
-
   async getCurrentUser(email = null) {
     try {
       const response = await api.get('/api/auth/me', {

@@ -60,7 +60,7 @@ const StackedCard = ({ children, index, total, id, className = "" }) => {
     <div
       ref={containerRef}
       id={id}
-      className="relative min-h-[95vh] sm:min-h-[110vh] w-full"
+      className="relative min-h-[90vh] sm:min-h-[110vh] w-full"
       style={{ zIndex: 10 + index }}
     >
       <div className="sticky top-14 sm:top-20 w-full px-3 sm:px-6 md:px-8 pb-8 sm:pb-12">
@@ -70,13 +70,13 @@ const StackedCard = ({ children, index, total, id, className = "" }) => {
             opacity: isLast ? 1 : opacity,
             y: isLast ? 0 : y,
           }}
-          className={`w-full max-w-7xl mx-auto rounded-2xl sm:rounded-3xl bg-[#06060a]/95 backdrop-blur-2xl border border-white/[0.12] p-4 sm:p-8 md:p-12 shadow-[0_-25px_80px_rgba(0,0,0,0.95)] relative overflow-hidden transition-colors ${className}`}
+          className={`w-full max-w-7xl mx-auto rounded-2xl sm:rounded-3xl bg-[#06060a]/95 backdrop-blur-2xl border border-white/[0.12] p-4 sm:p-8 md:p-12 shadow-[0_-25px_80px_rgba(0,0,0,0.95)] relative max-h-[calc(100dvh-4.5rem)] sm:max-h-none overflow-y-auto sm:overflow-hidden transition-colors ${className}`}
         >
           {/* Subtle top edge luminous razor line */}
           <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none" />
           
           {/* Top stack indicator badge */}
-          <div className="flex items-center justify-between pb-3 sm:pb-5 mb-5 sm:mb-8 border-b border-white/[0.07]">
+          <div className="flex items-center justify-between pb-3 sm:pb-5 mb-4 sm:mb-8 border-b border-white/[0.07]">
             <div className="flex items-center gap-2.5 sm:gap-3">
               <span className="w-2 h-2 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.7)]" />
               <span className="font-mono text-[10px] sm:text-xs tracking-[0.2em] sm:tracking-[0.25em] uppercase text-white/50">
@@ -321,9 +321,75 @@ const LandingPage = ({ onLaunch }) => {
         </div>
       </nav>
 
-      {/* CINEMATIC SCROLL-DRIVEN HERO SEQUENCE (PINNED SCENE) */}
-      <section ref={heroRef} className="relative w-full h-[220vh] sm:h-[260vh]">
-        {/* Sticky Pinned Viewport Container - Dynamic 100dvh on mobile to fit actual browser chrome */}
+      {/* MOBILE HERO VIEW (Fully visible, responsive, zero-clipping hero for mobile screens) */}
+      <section className="sm:hidden relative w-full min-h-[calc(100dvh-4rem)] flex flex-col justify-between p-5 pt-8 pb-10 bg-[#020204] overflow-hidden">
+        {/* Background Image Layer */}
+        <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
+          <img
+            src="/Background.webp"
+            alt="Cyber Topology Space"
+            className="w-full h-full object-cover filter brightness-[0.4] contrast-[110%]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#020204]/90 via-[#020204]/60 to-[#020204]" />
+        </div>
+
+        <div className="relative z-10 space-y-6 my-auto text-left">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.14] text-[10px] font-mono tracking-wider uppercase text-zinc-300 backdrop-blur-md">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)] shrink-0" />
+            <span>SIH26155 &middot; <span className="text-emerald-400 font-semibold">Bounded Local AI</span></span>
+          </div>
+
+          {/* Titles & Headlines */}
+          <div className="space-y-2">
+            <div className="text-xs font-mono tracking-widest uppercase text-emerald-400 font-bold flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <span>Autonomous Compliance Engine</span>
+            </div>
+            <h1 className="font-display font-black text-2xl xs:text-3xl uppercase tracking-tight text-white leading-tight">
+              MULTI-VENDOR <br />
+              <span className="text-emerald-400">NETWORK</span> AUDITOR
+            </h1>
+            <div className="text-base xs:text-lg font-display font-extrabold uppercase text-white/90 leading-tight pt-1">
+              PROVABLE <span className="font-serif-luxury italic font-normal text-emerald-400 lowercase">certainty</span> ACROSS REALITIES.
+            </div>
+          </div>
+
+          {/* Description */}
+          <p className="text-xs text-zinc-300 leading-relaxed font-normal">
+            Deterministic Security Verification across Cisco, Juniper, and Fortinet fleets against CIS, NIST SP 800-53, STIGs & NCIIPC with 100% offline mathematical proof.
+          </p>
+
+          {/* Action Buttons */}
+          <div className="pt-2 flex flex-col gap-3">
+            <button
+              onClick={onLaunch}
+              className="w-full py-3.5 px-6 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-black font-extrabold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(52,211,153,0.35)] cursor-pointer"
+            >
+              <Shield size={16} />
+              <span>Enter Compliance Console</span>
+              <ArrowRight size={15} />
+            </button>
+            
+            <a
+              href="#paradox"
+              className="w-full py-2.5 px-4 text-center rounded-xl bg-white/[0.04] border border-white/[0.1] text-xs font-mono text-zinc-300 hover:text-white"
+            >
+              Explore 10-Stage Pipeline &darr;
+            </a>
+          </div>
+        </div>
+
+        {/* Bottom Specs Pill */}
+        <div className="relative z-10 pt-4 border-t border-white/[0.08] flex items-center justify-between text-[10px] font-mono text-zinc-400">
+          <span>100% Offline Air-Gapped</span>
+          <span>Zero Cloud Call</span>
+        </div>
+      </section>
+
+      {/* CINEMATIC SCROLL-DRIVEN HERO SEQUENCE FOR DESKTOP (PINNED SCENE) */}
+      <section ref={heroRef} className="hidden sm:block relative w-full h-[260vh]">
+        {/* Sticky Pinned Viewport Container */}
         <div className="sticky top-0 h-[100dvh] w-full overflow-hidden flex flex-col justify-between">
           
           {/* LAYER 1: Futuristic, Atmospheric Cyber Background (z-0) */}

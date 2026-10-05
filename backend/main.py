@@ -78,15 +78,6 @@ class LoginRequest(BaseModel):
     firebase_uid: Optional[str] = None
     role: Optional[str] = None
 
-class GoogleAuthRequest(BaseModel):
-    email: str
-    full_name: Optional[str] = ""
-    firebase_uid: str
-    photo_url: Optional[str] = ""
-    org_name: Optional[str] = ""
-    phone_number: Optional[str] = ""
-    role: Optional[str] = "auditor"
-
 class CheckStatusRequest(BaseModel):
     email: str
 
@@ -1121,60 +1112,6 @@ def login(req: LoginRequest, db: Session = Depends(get_db)):
             "photo_url": user.photo_url,
             "firebase_uid": user.firebase_uid,
             "profile_completed": True
-        }
-    }
-
-@app.post("/api/auth/google")
-def google_auth(req: GoogleAuthRequest, db: Session = Depends(get_db)):
-    email_clean = req.email.strip().lower()
-    user = db.query(User).filter((User.email == email_clean) | (User.firebase_uid == req.firebase_uid)).first()
-    
-    is_new = False
-    if not user:
-        is_new = True
-        user = User(
-            full_name=req.full_name or email_clean.split("@")[0].title(),
-            org_name="",
-            email=email_clean,
-            phone_number="",
-            role=req.role or "auditor",
-            org_type="Defense & Critical Infrastructure",
-            department="",
-            firebase_uid=req.firebase_uid,
-            photo_url=req.photo_url,
-            profile_completed=False
-        )
-        db.add(user)
-        db.commit()
-        db.refresh(user)
-    else:
-        user.firebase_uid = req.firebase_uid
-        if req.photo_url:
-            user.photo_url = req.photo_url
-        if req.full_name and not user.full_name:
-            user.full_name = req.full_name
-        db.commit()
-        db.refresh(user)
-
-    is_complete = bool(user.profile_completed and user.org_name and user.phone_number)
-
-    return {
-        "success": True,
-        "is_first_time": not is_complete,
-        "profile_completed": is_complete,
-        "message": "Google authenticated successfully" if is_complete else "First-time login detected. Mandatory enterprise onboarding required.",
-        "user": {
-            "id": user.id,
-            "email": user.email,
-            "full_name": user.full_name,
-            "org_name": user.org_name,
-            "phone_number": user.phone_number,
-            "role": user.role,
-            "org_type": user.org_type,
-            "department": user.department or "",
-            "photo_url": user.photo_url,
-            "firebase_uid": user.firebase_uid,
-            "profile_completed": is_complete
         }
     }
 
